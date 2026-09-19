@@ -1,0 +1,33 @@
+name: Keep Supabase awake
+
+on:
+  schedule:
+    - cron: "0 9 * * 1,4"   # lunedì e giovedì alle 09:00 UTC
+  workflow_dispatch:         # permette di avviarlo a mano
+
+permissions:
+  contents: write
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Interroga il database
+        run: |
+          curl -sS -f "https://gyhezfinivsaetydkmmo.supabase.co/rest/v1/profiles?select=id&limit=1" \
+            -H "apikey: sb_publishable_w755pLXbZE18-T8VLK0UnQ_PpNLp-Cr"
+
+      - uses: actions/checkout@v4
+        if: always()
+
+      - name: Tieni attivo il repository (GitHub spegne i task dopo 60 giorni senza attività)
+        if: always()
+        run: |
+          last=$(git log -1 --format=%ct)
+          now=$(date +%s)
+          if [ $(( (now - last) / 86400 )) -ge 45 ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit --allow-empty -m "chore: keep scheduled workflow active"
+            git push
+          fi
