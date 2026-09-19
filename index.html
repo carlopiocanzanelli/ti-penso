@@ -3,20 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ti penso</title>
+<title>Carlo ed Enza</title>
 <meta name="theme-color" content="#211A3A">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Ti penso">
+<meta name="apple-mobile-web-app-title" content="Carlo ed Enza">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600;1,700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
+    color-scheme: dark;
     --crepuscolo: #211A3A;  /* sfondo: cielo poco dopo il tramonto */
     --velluto: #2E2244;     /* messaggi ricevuti e campi */
     --vino: #8F4262;        /* messaggi inviati */
@@ -59,11 +60,21 @@
     font-family: var(--serif); font-style: italic; font-weight: 600;
     font-size: 3.6rem; line-height: 1; letter-spacing: -0.01em; margin: 0 0 28px;
   }
+  #login h1 { font-size: 3.1rem; }
+  input[type="checkbox"] { display: inline-block; width: 20px; height: 20px; margin: 0; accent-color: var(--vino); }
+  input[type="date"], input[type="datetime-local"] { min-width: 0; max-width: 100%; -webkit-appearance: none; appearance: none; min-height: 50px; }
+  select, textarea {
+    display: block; width: 100%; margin-top: 6px;
+    background: var(--velluto); border: 1px solid transparent; border-radius: 16px; color: var(--testo);
+    padding: 14px 16px; font-size: 16px;
+  }
+  textarea { resize: vertical; min-height: 84px; }
+  select:focus, textarea:focus { border-color: var(--nebbia); outline: none; }
   .hint { color: var(--nebbia); margin: -12px 0 22px; }
   label { display: block; margin-bottom: 14px; color: var(--nebbia); font-size: .95rem; }
   input {
     display: block; width: 100%; margin-top: 6px;
-    background: var(--velluto); border: 1px solid transparent; border-radius: 16px;
+    background: var(--velluto); border: 1px solid transparent; border-radius: 16px; color: var(--testo);
     padding: 14px 16px; font-size: 16px; /* 16px evita lo zoom su iPhone */
   }
   input::placeholder { color: var(--nebbia); }
@@ -85,11 +96,25 @@
     display: flex; align-items: center; justify-content: space-between;
     padding: 12px 22px 8px;
   }
+  .who { min-width: 0; }
+  .counter {
+    display: block; background: none; border: 0; margin: 2px 0 0; padding: 4px 0;
+    color: var(--nebbia); font-size: .93rem; text-align: left; cursor: pointer; border-radius: 6px;
+  }
   header h2 {
     margin: 0; font-family: var(--serif); font-style: italic; font-weight: 600;
     font-size: 2.1rem; line-height: 1.1; letter-spacing: 0;
   }
   .ghost { background: none; border: 0; color: var(--nebbia); padding: 10px; margin: -10px; cursor: pointer; border-radius: 10px; }
+
+  /* ---------- Schede: Chat e Agenda ---------- */
+  #tabs { display: flex; gap: 4px; margin: 6px 20px 8px; padding: 4px; background: var(--velluto); border-radius: 22px; }
+  #tabs button {
+    flex: 1; min-height: 40px; border: 0; border-radius: 18px; background: none;
+    color: var(--nebbia); font-weight: 600; cursor: pointer;
+  }
+  #tabs button[aria-selected="true"] { background: var(--vino); color: var(--testo); }
+  .pane { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 
   #banner {
     margin: 0 16px 8px; padding: 12px 14px; border-radius: 16px;
@@ -170,6 +195,40 @@
     to   { transform: scale(1.2, 1.9); opacity: 0; }
   }
 
+  /* ---------- Agenda ---------- */
+  #agenda { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 6px 16px 16px; }
+  .next { padding: 16px 18px; border-radius: 22px; background: var(--velluto); margin-bottom: 8px; }
+  .next .lbl { color: var(--nebbia); font-size: .88rem; }
+  .next .k { font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 1.7rem; line-height: 1.15; margin: 2px 0 4px; }
+  .next .w { color: var(--testo); font-size: .95rem; }
+  .agenda-day { margin: 18px 4px 6px; color: var(--nebbia); font-size: .85rem; }
+  .ev {
+    display: flex; gap: 14px; align-items: baseline; width: 100%; text-align: left;
+    background: var(--velluto); border: 0; border-radius: 18px; padding: 12px 16px; margin-bottom: 8px; cursor: pointer;
+  }
+  .ev .h { flex: none; min-width: 56px; font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 1.3rem; }
+  .ev .w { min-width: 0; }
+  .ev .ttl { font-weight: 700; overflow-wrap: anywhere; }
+  .ev .sub { color: var(--nebbia); font-size: .86rem; overflow-wrap: anywhere; white-space: pre-wrap; }
+  .ev.past { opacity: .55; }
+  .agenda-empty { text-align: center; color: var(--nebbia); font-family: var(--serif); font-style: italic; font-size: 1.3rem; margin: 26px auto; max-width: 260px; }
+  .more { display: block; margin: 14px auto 0; padding: 10px 14px; color: var(--nebbia); background: none; border: 0; cursor: pointer; }
+
+  dialog {
+    border: 0; padding: 0; border-radius: 26px; background: var(--crepuscolo); color: var(--testo);
+    width: min(92vw, 420px); max-height: 90dvh; overflow-y: auto;
+  }
+  dialog::backdrop { background: rgba(10, 6, 20, .72); }
+  dialog form { padding: 22px 20px 18px; }
+  dialog h3 { margin: 0 0 16px; font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 1.9rem; line-height: 1.1; }
+  .check { display: flex; align-items: center; gap: 10px; color: var(--testo); }
+  .actions { display: flex; gap: 10px; margin-top: 10px; }
+  .btn-sec {
+    flex: 1; min-height: 48px; border-radius: 24px; background: none; cursor: pointer;
+    border: 1px solid var(--nebbia); color: var(--testo); font-weight: 600;
+  }
+  .btn-sec.danger { color: var(--errore); border-color: var(--errore); }
+
   #toast {
     position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 150px);
     transform: translate(-50%, 8px); opacity: 0; pointer-events: none;
@@ -190,7 +249,7 @@
 <!-- Accesso -->
 <main id="login" class="screen" hidden>
   <div class="hero-moon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
-  <h1>Ti penso</h1>
+  <h1>Carlo ed Enza</h1>
   <form id="login-form">
     <label>Email
       <input type="email" id="email" autocomplete="username" required>
@@ -219,15 +278,24 @@
 <!-- Chat -->
 <div id="chat" hidden>
   <header>
-    <h2 id="partner-name">…</h2>
+    <div class="who">
+      <h2 id="partner-name">…</h2>
+      <button id="counter" class="counter" type="button" hidden></button>
+    </div>
     <button id="logout" class="ghost" type="button">Esci</button>
   </header>
+
+  <div id="tabs" role="tablist">
+    <button id="tab-chat" role="tab" type="button" aria-selected="true">Chat</button>
+    <button id="tab-agenda" role="tab" type="button" aria-selected="false">Agenda</button>
+  </div>
 
   <div id="banner" hidden>
     <p id="banner-text"></p>
     <button id="enable-push" class="small" type="button" hidden>Attiva notifiche</button>
   </div>
 
+  <div id="pane-chat" class="pane">
   <div id="messages" aria-live="polite"></div>
 
   <footer>
@@ -242,7 +310,47 @@
       <span>Ti penso</span>
     </button>
   </footer>
+  </div>
+
+  <div id="pane-agenda" class="pane" hidden>
+    <div id="agenda"></div>
+    <footer>
+      <button id="add-event" class="primary" type="button">Nuovo appuntamento</button>
+    </footer>
+  </div>
 </div>
+
+<dialog id="ev-dialog">
+  <form id="ev-form">
+    <h3 id="ev-heading">Nuovo appuntamento</h3>
+    <label>Titolo
+      <input id="ev-title" maxlength="100" required>
+    </label>
+    <label class="check"><input type="checkbox" id="ev-allday"> Tutto il giorno</label>
+    <label style="margin-top:14px">Quando
+      <input type="datetime-local" id="ev-dt">
+      <input type="date" id="ev-d" hidden>
+    </label>
+    <label>Promemoria
+      <select id="ev-remind">
+        <option value="0">All'ora dell'appuntamento</option>
+        <option value="15">15 minuti prima</option>
+        <option value="60" selected>1 ora prima</option>
+        <option value="1440">1 giorno prima</option>
+        <option value="none">Nessun promemoria</option>
+      </select>
+    </label>
+    <label>Note (facoltative)
+      <textarea id="ev-notes" maxlength="1000" rows="3"></textarea>
+    </label>
+    <p class="error" id="ev-error" role="alert"></p>
+    <button class="primary" type="submit">Salva</button>
+    <div class="actions">
+      <button class="btn-sec" type="button" id="ev-cancel">Annulla</button>
+      <button class="btn-sec danger" type="button" id="ev-delete" hidden>Elimina</button>
+    </div>
+  </form>
+</dialog>
 
 <div id="toast" role="status" aria-live="polite"></div>
 
@@ -303,6 +411,9 @@ async function init() {
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch((e) => console.warn("Service worker:", e));
+    navigator.serviceWorker.addEventListener("message", (e) => {
+      if (state.me && e.data && e.data.tab) setTab(e.data.tab);
+    });
   }
 
   sb.auth.onAuthStateChange((event) => {
@@ -391,14 +502,51 @@ async function startChat() {
       }
       addMessage(m);
     })
+    .on("postgres_changes", { event: "*", schema: "public", table: "events" }, () => {
+      if (!$("pane-agenda").hidden) loadEvents();
+    })
     .subscribe();
 
   refreshBanner();
+  setTab(new URLSearchParams(location.search).get("tab") === "agenda" ? "agenda" : "chat");
 }
 
 function renderHeader() {
   $("partner-name").textContent = state.partnerName || "In attesa dell'altra persona";
+  renderCounter();
 }
+
+/* ---------- Contatore dei giorni insieme ---------- */
+
+const TOGETHER_SINCE = new Date(2026, 7, 22); // 22 agosto 2026 (i mesi partono da 0)
+
+function togetherInfo() {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.round((today - TOGETHER_SINCE) / 86400000);
+  let months = (today.getFullYear() - TOGETHER_SINCE.getFullYear()) * 12 + today.getMonth() - TOGETHER_SINCE.getMonth();
+  if (today.getDate() < TOGETHER_SINCE.getDate()) months -= 1;
+  const anchor = new Date(TOGETHER_SINCE.getFullYear(), TOGETHER_SINCE.getMonth() + Math.max(months, 0), TOGETHER_SINCE.getDate());
+  const rest = Math.round((today - anchor) / 86400000);
+  return { days, months, rest };
+}
+
+function renderCounter() {
+  const el = $("counter");
+  const { days } = togetherInfo();
+  if (days < 0) { el.hidden = true; return; }
+  el.textContent = days === 0 ? "Il primo giorno insieme"
+                 : days === 1 ? "1 giorno insieme"
+                 : `${days} giorni insieme`;
+  el.hidden = false;
+}
+
+$("counter").addEventListener("click", () => {
+  const { months, rest } = togetherInfo();
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  const detail = months > 0 ? `: ${plural(months, "mese", "mesi")} e ${plural(rest, "giorno", "giorni")}` : "";
+  toast("Insieme dal 22 agosto 2026" + detail);
+});
 
 async function syncMessages() {
   const { data, error } = await sb
@@ -510,7 +658,181 @@ $("think").addEventListener("click", async () => {
 });
 
 document.addEventListener("visibilitychange", () => {
-  if (!document.hidden && state.me && !$("chat").hidden) syncMessages();
+  if (!document.hidden && state.me && !$("chat").hidden) {
+    renderCounter(); syncMessages();
+    if (!$("pane-agenda").hidden) loadEvents();
+  }
+});
+
+/* ---------- Schede ---------- */
+
+function setTab(name) {
+  const agenda = name === "agenda";
+  $("pane-chat").hidden = agenda;
+  $("pane-agenda").hidden = !agenda;
+  $("tab-chat").setAttribute("aria-selected", String(!agenda));
+  $("tab-agenda").setAttribute("aria-selected", String(agenda));
+  if (agenda) loadEvents();
+  else { const l = $("messages"); l.scrollTop = l.scrollHeight; }
+}
+$("tab-chat").addEventListener("click", () => setTab("chat"));
+$("tab-agenda").addEventListener("click", () => setTab("agenda"));
+
+/* ---------- Agenda condivisa ---------- */
+
+let events = [];
+let showPast = false;
+let editingId = null;
+const pad = (n) => String(n).padStart(2, "0");
+const toDateInput = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const toLocalInput = (d) => `${toDateInput(d)}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+const fmtDay = (d) => d.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" });
+const fmtTime = (d) => d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+const REMIND = { 0: "all'ora dell'appuntamento", 15: "15 minuti prima", 60: "1 ora prima", 1440: "1 giorno prima" };
+
+async function loadEvents() {
+  const { data, error } = await sb.from("events").select("*").order("starts_at");
+  if (error) { toast("Non riesco a caricare l'agenda."); return; }
+  events = data;
+  renderAgenda();
+}
+
+function nextSpecial() {
+  const t = new Date();
+  const today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+  const at = (n) => new Date(TOGETHER_SINCE.getFullYear(), TOGETHER_SINCE.getMonth() + n, TOGETHER_SINCE.getDate());
+  let n = 1;
+  while (at(n) < today) n++;
+  return { n, date: at(n), diff: Math.round((at(n) - today) / 86400000) };
+}
+
+function isPast(ev) {
+  const start = new Date(ev.starts_at);
+  const t = new Date();
+  if (ev.all_day) {
+    return new Date(start.getFullYear(), start.getMonth(), start.getDate()) < new Date(t.getFullYear(), t.getMonth(), t.getDate());
+  }
+  return start < t;
+}
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+function eventButton(ev) {
+  const b = el("button", "ev" + (isPast(ev) ? " past" : ""));
+  b.type = "button";
+  if (!ev.all_day) b.append(el("span", "h", fmtTime(new Date(ev.starts_at))));
+  const w = el("span", "w");
+  w.append(el("div", "ttl", ev.title));
+  const sub = [];
+  if (ev.all_day) sub.push("Tutto il giorno");
+  if (ev.remind_min !== null && ev.remind_min !== undefined) sub.push("Promemoria " + REMIND[ev.remind_min]);
+  if (ev.notes) sub.push(ev.notes);
+  if (sub.length) w.append(el("div", "sub", sub.join("\n")));
+  b.append(w);
+  b.addEventListener("click", () => openEventForm(ev));
+  return b;
+}
+
+function renderDays(list, root) {
+  let last = null;
+  for (const ev of list) {
+    const d = new Date(ev.starts_at);
+    const key = d.toDateString();
+    if (key !== last) { last = key; root.append(el("div", "agenda-day", fmtDay(d))); }
+    root.append(eventButton(ev));
+  }
+}
+
+function renderAgenda() {
+  const root = $("agenda");
+  root.replaceChildren();
+
+  const s = nextSpecial();
+  const years = s.n % 12 === 0;
+  const card = el("div", "next");
+  card.append(el("div", "lbl", years ? "Prossimo anniversario" : "Prossimo mesiversario"));
+  card.append(el("div", "k", years ? `${s.n / 12} ${s.n / 12 === 1 ? "anno" : "anni"} insieme` : `${s.n} ${s.n === 1 ? "mese" : "mesi"} insieme`));
+  card.append(el("div", "w", (s.diff === 0 ? "È oggi! " : s.diff === 1 ? "Domani, " : `Tra ${s.diff} giorni, `) + fmtDay(s.date)));
+  root.append(card);
+
+  const upcoming = events.filter((e) => !isPast(e));
+  const past = events.filter(isPast).reverse();
+  if (upcoming.length === 0) root.append(el("p", "agenda-empty", "Nessun appuntamento in programma. Aggiungi il primo."));
+  else renderDays(upcoming, root);
+
+  if (past.length) {
+    const more = el("button", "more", showPast ? "Nascondi i passati" : `Mostra i passati (${past.length})`);
+    more.type = "button";
+    more.addEventListener("click", () => { showPast = !showPast; renderAgenda(); });
+    root.append(more);
+    if (showPast) renderDays(past, root);
+  }
+}
+
+/* ---- modulo di inserimento e modifica ---- */
+
+function syncAllDay() {
+  const all = $("ev-allday").checked;
+  $("ev-dt").hidden = all; $("ev-d").hidden = !all;
+  $("ev-dt").required = !all; $("ev-d").required = all;
+}
+$("ev-allday").addEventListener("change", syncAllDay);
+
+function openEventForm(ev) {
+  editingId = ev ? ev.id : null;
+  $("ev-heading").textContent = ev ? "Modifica appuntamento" : "Nuovo appuntamento";
+  $("ev-error").textContent = "";
+  $("ev-delete").hidden = !ev;
+  $("ev-title").value = ev ? ev.title : "";
+  $("ev-notes").value = ev && ev.notes ? ev.notes : "";
+  $("ev-allday").checked = ev ? ev.all_day : false;
+  const start = ev ? new Date(ev.starts_at) : (() => { const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(20, 0, 0, 0); return d; })();
+  $("ev-dt").value = toLocalInput(start);
+  $("ev-d").value = toDateInput(start);
+  $("ev-remind").value = ev ? (ev.remind_min === null ? "none" : String(ev.remind_min)) : "60";
+  syncAllDay();
+  $("ev-dialog").showModal();
+}
+$("add-event").addEventListener("click", () => openEventForm(null));
+$("ev-cancel").addEventListener("click", () => $("ev-dialog").close());
+
+$("ev-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("ev-error").textContent = "";
+  const allDay = $("ev-allday").checked;
+  const start = allDay ? new Date(`${$("ev-d").value}T09:00`) : new Date($("ev-dt").value);
+  if (isNaN(start)) { $("ev-error").textContent = "Scegli una data valida."; return; }
+  const remind = $("ev-remind").value;
+  const row = {
+    title: $("ev-title").value.trim(),
+    notes: $("ev-notes").value.trim() || null,
+    starts_at: start.toISOString(),
+    all_day: allDay,
+    remind_min: remind === "none" ? null : Number(remind),
+    reminded_at: null,
+    announce: editingId ? "changed" : "new",
+  };
+  const { error } = editingId
+    ? await sb.from("events").update({ ...row, updated_by: state.me.id }).eq("id", editingId)
+    : await sb.from("events").insert(row);
+  if (error) { console.error(error); $("ev-error").textContent = "Non sono riuscito a salvare. Riprova."; return; }
+  $("ev-dialog").close();
+  toast("Appuntamento salvato");
+  loadEvents();
+});
+
+$("ev-delete").addEventListener("click", async () => {
+  if (!editingId || !confirm("Eliminare questo appuntamento?")) return;
+  const { error } = await sb.from("events").delete().eq("id", editingId);
+  if (error) { $("ev-error").textContent = "Non sono riuscito a eliminarlo. Riprova."; return; }
+  $("ev-dialog").close();
+  toast("Appuntamento eliminato");
+  loadEvents();
 });
 
 /* ---------- Notifiche ---------- */
