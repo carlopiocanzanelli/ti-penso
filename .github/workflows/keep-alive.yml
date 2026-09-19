@@ -2,7 +2,7 @@ name: Keep Supabase awake
 
 on:
   schedule:
-    - cron: "0 9 * * 1,4"   # lunedì e giovedì alle 09:00 UTC
+        - cron: "0 9 * * *"     # ogni giorno alle 09:00 UTC   # lunedì e giovedì alle 09:00 UTC
   workflow_dispatch:         # permette di avviarlo a mano
 
 permissions:
