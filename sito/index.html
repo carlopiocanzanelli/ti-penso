@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ti penso</title>
+<meta name="theme-color" content="#1E1830">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ti penso">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --notte: #1E1830;      /* sfondo */
+    --prugna: #2D2444;     /* superfici e messaggi ricevuti */
+    --viola: #54467F;      /* messaggi inviati */
+    --lavanda: #E9E4F7;    /* testo */
+    --nebbia: #9E96BC;     /* testo secondario */
+    --lanterna: #FFB35C;   /* SOLO per il "pensiero" */
+    --inchiostro: #2A1B0E; /* testo sopra la lanterna */
+    --errore: #FF9A9A;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--notte);
+    color: var(--lavanda);
+    font-family: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  [hidden] { display: none !important; }
+  button, input { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--lanterna); outline-offset: 2px; }
+
+  /* ---------- Schermate di accesso ---------- */
+  .screen {
+    min-height: 100dvh;
+    display: flex; flex-direction: column; justify-content: center;
+    max-width: 380px; margin: 0 auto;
+    padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+  }
+  .orb {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--lanterna);
+    box-shadow: 0 0 0 14px rgba(255,179,92,.12), 0 0 60px 16px rgba(255,179,92,.35);
+    margin: 0 0 40px 14px;
+  }
+  h1 { font-size: 2.8rem; line-height: 1.05; letter-spacing: -0.03em; font-weight: 700; margin: 0 0 24px; }
+  .hint { color: var(--nebbia); margin: -8px 0 20px; }
+  label { display: block; margin-bottom: 14px; color: var(--nebbia); font-size: .95rem; }
+  input {
+    display: block; width: 100%; margin-top: 6px;
+    background: var(--prugna); border: 1px solid transparent; border-radius: 14px;
+    padding: 14px 16px; font-size: 16px; /* 16px evita lo zoom su iPhone */
+  }
+  input::placeholder { color: var(--nebbia); }
+  input:focus { border-color: var(--nebbia); outline: none; }
+  .error { color: var(--errore); min-height: 1.4em; margin: 0 0 8px; }
+  .primary {
+    width: 100%; min-height: 52px; border: 0; border-radius: 26px;
+    background: var(--lavanda); color: var(--notte); font-weight: 700; font-size: 1.05rem; cursor: pointer;
+  }
+  .primary:active { transform: scale(.98); }
+
+  /* ---------- Chat ---------- */
+  #chat {
+    display: flex; flex-direction: column; height: 100dvh;
+    max-width: 640px; margin: 0 auto;
+    padding-top: env(safe-area-inset-top);
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px 10px;
+  }
+  header h2 { margin: 0; font-size: 1.6rem; letter-spacing: -0.02em; font-weight: 700; }
+  .ghost { background: none; border: 0; color: var(--nebbia); padding: 10px; margin: -10px; cursor: pointer; border-radius: 10px; }
+
+  #banner {
+    margin: 0 16px 8px; padding: 12px 14px; border-radius: 14px;
+    background: var(--prugna); color: var(--lavanda); font-size: .93rem;
+    display: flex; gap: 12px; align-items: center; justify-content: space-between;
+  }
+  #banner p { margin: 0; }
+  .small {
+    flex: none; min-height: 40px; padding: 0 14px; border: 0; border-radius: 20px;
+    background: var(--lavanda); color: var(--notte); font-weight: 700; cursor: pointer;
+  }
+
+  #messages {
+    flex: 1; overflow-y: auto; overscroll-behavior: contain;
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 8px 16px 16px;
+  }
+  .empty { margin: auto; text-align: center; color: var(--nebbia); max-width: 260px; }
+  .day { align-self: center; margin: 14px 0 6px; color: var(--nebbia); font-size: .85rem; }
+
+  .msg {
+    max-width: 80%; padding: 9px 13px 7px; border-radius: 18px;
+    overflow-wrap: anywhere; white-space: pre-wrap;
+  }
+  .msg .t { display: block; margin-top: 2px; text-align: right; font-size: .72rem; color: var(--nebbia); }
+  .msg.mine   { align-self: flex-end;   background: var(--viola);  border-bottom-right-radius: 6px; }
+  .msg.theirs { align-self: flex-start; background: var(--prugna); border-bottom-left-radius: 6px; }
+  .msg.mine .t { color: #C9C0E6; }
+
+  /* Il "pensiero": l'unico elemento che usa il colore lanterna */
+  .thought {
+    align-self: center; display: flex; align-items: center; gap: 10px;
+    margin: 8px 0; color: var(--lanterna); font-size: .95rem;
+  }
+  .thought .dot {
+    width: 10px; height: 10px; border-radius: 50%; background: var(--lanterna);
+    box-shadow: 0 0 0 4px rgba(255,179,92,.16), 0 0 14px 3px rgba(255,179,92,.5);
+  }
+  .thought.mine { color: var(--nebbia); }
+  .thought.mine .dot { background: var(--nebbia); box-shadow: 0 0 0 4px rgba(158,150,188,.14); }
+  .thought .t { color: var(--nebbia); font-size: .75rem; }
+
+  footer { padding: 8px 16px max(14px, env(safe-area-inset-bottom)); }
+  #msg-form { display: flex; gap: 8px; margin-bottom: 12px; }
+  #msg-form input { margin: 0; border-radius: 24px; padding: 13px 18px; }
+  .send {
+    flex: none; width: 48px; height: 48px; border: 0; border-radius: 50%;
+    background: var(--prugna); color: var(--lavanda); cursor: pointer;
+    display: grid; place-items: center;
+  }
+  .send:active { background: var(--viola); }
+  .send svg { width: 22px; height: 22px; }
+
+  .think {
+    position: relative; width: 100%; min-height: 62px; border: 0; border-radius: 31px;
+    background: var(--lanterna); color: var(--inchiostro);
+    font-weight: 700; font-size: 1.25rem; letter-spacing: -0.01em; cursor: pointer;
+    box-shadow: 0 6px 34px rgba(255,179,92,.28);
+    transition: transform .12s ease, opacity .2s ease;
+  }
+  .think:active { transform: scale(.985); }
+  .think[aria-disabled="true"] { opacity: .55; }
+  .think .ring {
+    position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    border: 2px solid var(--lanterna);
+    animation: ring .9s ease-out forwards;
+  }
+  @keyframes ring {
+    from { transform: scale(1);    opacity: .9; }
+    to   { transform: scale(1.22, 1.9); opacity: 0; }
+  }
+
+  #toast {
+    position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 150px);
+    transform: translate(-50%, 8px); opacity: 0; pointer-events: none;
+    background: var(--lavanda); color: var(--notte);
+    padding: 10px 16px; border-radius: 16px; font-size: .93rem; max-width: 86vw; text-align: center;
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .think .ring { animation: none; display: none; }
+    .think, #toast { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Accesso -->
+<main id="login" class="screen" hidden>
+  <div class="orb" aria-hidden="true"></div>
+  <h1>Ti penso</h1>
+  <form id="login-form">
+    <label>Email
+      <input type="email" id="email" autocomplete="username" required>
+    </label>
+    <label>Password
+      <input type="password" id="password" autocomplete="current-password" required>
+    </label>
+    <p class="error" id="login-error" role="alert"></p>
+    <button class="primary" type="submit">Entra</button>
+  </form>
+</main>
+
+<!-- Primo accesso: scelta del nome -->
+<main id="setup" class="screen" hidden>
+  <h1>Come ti chiami?</h1>
+  <p class="hint">Il tuo nome comparirà nelle notifiche che riceve l'altra persona.</p>
+  <form id="setup-form">
+    <label>Il tuo nome
+      <input id="name" maxlength="30" autocomplete="given-name" required>
+    </label>
+    <p class="error" id="setup-error" role="alert"></p>
+    <button class="primary" type="submit">Salva</button>
+  </form>
+</main>
+
+<!-- Chat -->
+<div id="chat" hidden>
+  <header>
+    <h2 id="partner-name">…</h2>
+    <button id="logout" class="ghost" type="button">Esci</button>
+  </header>
+
+  <div id="banner" hidden>
+    <p id="banner-text"></p>
+    <button id="enable-push" class="small" type="button" hidden>Attiva notifiche</button>
+  </div>
+
+  <div id="messages" aria-live="polite"></div>
+
+  <footer>
+    <form id="msg-form" autocomplete="off">
+      <input id="msg" placeholder="Scrivi un messaggio" maxlength="2000" aria-label="Messaggio">
+      <button class="send" type="submit" aria-label="Invia messaggio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
+      </button>
+    </form>
+    <button id="think" class="think" type="button">Ti penso</button>
+  </footer>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+"use strict";
+
+const $ = (id) => document.getElementById(id);
+const state = { me: null, myName: null, partnerName: null, channel: null, seen: new Set(), lastDay: null };
+let sb = null;
+
+/* ---------- Utilità ---------- */
+
+let toastTimer;
+function toast(text) {
+  const el = $("toast");
+  el.textContent = text;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
+}
+
+function show(screen) {
+  for (const id of ["login", "setup", "chat"]) $(id).hidden = id !== screen;
+}
+
+function dayLabel(d) {
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return "Oggi";
+  if (d.toDateString() === yesterday.toDateString()) return "Ieri";
+  return d.toLocaleDateString("it-IT", { day: "numeric", month: "long" });
+}
+
+function b64ToUint8(b64) {
+  const pad = "=".repeat((4 - (b64.length % 4)) % 4);
+  const raw = atob((b64 + pad).replace(/-/g, "+").replace(/_/g, "/"));
+  return Uint8Array.from(raw, (c) => c.charCodeAt(0));
+}
+
+function otherName() {
+  return state.partnerName || "L'altra persona";
+}
+
+/* ---------- Avvio e accesso ---------- */
+
+async function init() {
+  const cfg = window.CONFIG || {};
+  if (!cfg.SUPABASE_URL || cfg.SUPABASE_URL.includes("INCOLLA_QUI")) {
+    show("login");
+    $("login-error").textContent = "Manca la configurazione: compila il file config.js.";
+    return;
+  }
+  sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch((e) => console.warn("Service worker:", e));
+  }
+
+  sb.auth.onAuthStateChange((event) => {
+    if (event === "SIGNED_OUT") { teardown(); show("login"); }
+  });
+
+  const { data } = await sb.auth.getSession();
+  if (data.session) await afterLogin(data.session.user);
+  else show("login");
+}
+
+$("login-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!sb) return;
+  $("login-error").textContent = "";
+  const { data, error } = await sb.auth.signInWithPassword({
+    email: $("email").value.trim(),
+    password: $("password").value,
+  });
+  if (error) { $("login-error").textContent = "Email o password non corrette."; return; }
+  await afterLogin(data.user);
+});
+
+async function afterLogin(user) {
+  state.me = user;
+  try {
+    await loadProfiles();
+    if (!state.myName) { show("setup"); $("name").focus(); return; }
+    await startChat();
+  } catch (err) {
+    console.error(err);
+    show("login");
+    $("login-error").textContent = "Non riesco a collegarmi al server. Controlla config.js e lo schema del database.";
+  }
+}
+
+async function loadProfiles() {
+  const { data, error } = await sb.from("profiles").select("id,name");
+  if (error) throw error;
+  state.myName = data.find((p) => p.id === state.me.id)?.name ?? null;
+  state.partnerName = data.find((p) => p.id !== state.me.id)?.name ?? null;
+}
+
+$("setup-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("setup-error").textContent = "";
+  const name = $("name").value.trim();
+  if (!name) return;
+  const { error } = await sb.from("profiles").upsert({ id: state.me.id, name });
+  if (error) { $("setup-error").textContent = "Non sono riuscito a salvare il nome. Riprova."; return; }
+  state.myName = name;
+  await startChat();
+});
+
+$("logout").addEventListener("click", async () => {
+  // Questo telefono smette di ricevere notifiche per l'account che esce
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) await sb.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
+  } catch (_) { /* non è un problema */ }
+  await sb.auth.signOut();
+});
+
+function teardown() {
+  if (state.channel) { sb.removeChannel(state.channel); state.channel = null; }
+  state.me = null; state.myName = null; state.partnerName = null;
+  state.seen.clear(); state.lastDay = null;
+  $("messages").replaceChildren();
+}
+
+/* ---------- Chat ---------- */
+
+async function startChat() {
+  show("chat");
+  renderHeader();
+  await syncMessages();
+
+  state.channel = sb
+    .channel("stanza")
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, async (payload) => {
+      const m = payload.new;
+      if (m.sender !== state.me.id && !state.partnerName) {
+        await loadProfiles().catch(() => {});
+        renderHeader();
+      }
+      addMessage(m);
+    })
+    .subscribe();
+
+  refreshBanner();
+}
+
+function renderHeader() {
+  $("partner-name").textContent = state.partnerName || "In attesa dell'altra persona";
+}
+
+async function syncMessages() {
+  const { data, error } = await sb
+    .from("messages")
+    .select("id,sender,kind,body,created_at")
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) { toast("Non riesco a caricare i messaggi."); return; }
+
+  const list = $("messages");
+  list.replaceChildren();
+  state.seen.clear();
+  state.lastDay = null;
+
+  if (data.length === 0) {
+    const p = document.createElement("p");
+    p.id = "empty"; p.className = "empty";
+    p.textContent = "Ancora nessun messaggio. Scrivi qualcosa o premi «Ti penso».";
+    list.appendChild(p);
+    return;
+  }
+  data.reverse().forEach(addMessage);
+}
+
+function addMessage(m) {
+  if (state.seen.has(m.id)) return;
+  state.seen.add(m.id);
+  $("empty")?.remove();
+
+  const list = $("messages");
+  const date = new Date(m.created_at);
+  const mine = m.sender === state.me.id;
+
+  const dayKey = date.toDateString();
+  if (dayKey !== state.lastDay) {
+    state.lastDay = dayKey;
+    const d = document.createElement("div");
+    d.className = "day";
+    d.textContent = dayLabel(date);
+    list.appendChild(d);
+  }
+
+  const time = date.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+  const el = document.createElement("div");
+
+  if (m.kind === "thinking") {
+    el.className = "thought " + (mine ? "mine" : "theirs");
+    const dot = document.createElement("span"); dot.className = "dot";
+    const txt = document.createElement("span");
+    txt.textContent = mine ? "Hai mandato un pensiero" : `${otherName()} ti sta pensando`;
+    const t = document.createElement("span"); t.className = "t"; t.textContent = time;
+    el.append(dot, txt, t);
+  } else {
+    el.className = "msg " + (mine ? "mine" : "theirs");
+    el.append(document.createTextNode(m.body || ""));
+    const t = document.createElement("span"); t.className = "t"; t.textContent = time;
+    el.append(t);
+  }
+
+  list.appendChild(el);
+  list.scrollTop = list.scrollHeight;
+}
+
+async function send(kind, body) {
+  const { data, error } = await sb
+    .from("messages")
+    .insert({ kind, body: body ?? null })
+    .select("id,sender,kind,body,created_at")
+    .single();
+  if (error) {
+    console.error(error);
+    toast("Invio non riuscito. Controlla la connessione e riprova.");
+    return null;
+  }
+  addMessage(data);
+  // La notifica all'altra persona parte da qui
+  sb.functions.invoke("send-push", { body: { message_id: data.id } }).then(({ error: fnErr }) => {
+    if (fnErr) console.warn("Notifica non inviata:", fnErr);
+  });
+  return data;
+}
+
+$("msg-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const input = $("msg");
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = "";
+  input.focus();
+  const ok = await send("text", text);
+  if (!ok) input.value = text;
+});
+
+let cooling = false;
+$("think").addEventListener("click", async () => {
+  if (cooling) return;
+  cooling = true;
+  const btn = $("think");
+  btn.setAttribute("aria-disabled", "true");
+
+  const ring = document.createElement("span");
+  ring.className = "ring";
+  btn.appendChild(ring);
+  setTimeout(() => ring.remove(), 950);
+
+  const ok = await send("thinking", null);
+  toast(ok ? "Pensiero inviato" : "Pensiero non inviato");
+  setTimeout(() => { cooling = false; btn.removeAttribute("aria-disabled"); }, ok ? 4000 : 500);
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && state.me && !$("chat").hidden) syncMessages();
+});
+
+/* ---------- Notifiche ---------- */
+
+function pushSupported() {
+  return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+}
+
+async function savePushSubscription() {
+  const reg = await navigator.serviceWorker.ready;
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) {
+    sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: b64ToUint8(CONFIG.VAPID_PUBLIC_KEY),
+    });
+  }
+  const j = sub.toJSON();
+  const { error } = await sb
+    .from("push_subscriptions")
+    .upsert({ user_id: state.me.id, endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth }, { onConflict: "endpoint" });
+  if (error) throw error;
+}
+
+function refreshBanner() {
+  const banner = $("banner"), text = $("banner-text"), btn = $("enable-push");
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+              (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const standalone = window.navigator.standalone === true ||
+                     window.matchMedia("(display-mode: standalone)").matches;
+  btn.hidden = true;
+
+  if (ios && !standalone) {
+    text.textContent = "Per ricevere le notifiche su iPhone: tocca Condividi, poi «Aggiungi alla schermata Home» e apri l'app da lì.";
+    banner.hidden = false; return;
+  }
+  if (!pushSupported()) {
+    text.textContent = "Questo browser non supporta le notifiche.";
+    banner.hidden = false; return;
+  }
+  if (Notification.permission === "granted") {
+    banner.hidden = true;
+    savePushSubscription().catch((e) => console.warn("Sottoscrizione push:", e));
+    return;
+  }
+  if (Notification.permission === "denied") {
+    text.textContent = "Le notifiche sono bloccate. Riattivale dalle impostazioni del telefono.";
+    banner.hidden = false; return;
+  }
+  text.textContent = "Attiva le notifiche per sapere subito quando ti scrive o ti pensa.";
+  btn.hidden = false;
+  banner.hidden = false;
+}
+
+$("enable-push").addEventListener("click", async () => {
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted") { toast("Notifiche non attivate."); refreshBanner(); return; }
+    await savePushSubscription();
+    toast("Notifiche attivate");
+    refreshBanner();
+  } catch (err) {
+    console.error(err);
+    toast("Non sono riuscito ad attivare le notifiche.");
+  }
+});
+
+init();
+</script>
+</body>
+</html>
