@@ -64,6 +64,7 @@
   input[type="checkbox"] { display: inline-block; width: 20px; height: 20px; margin: 0; accent-color: var(--vino); }
   input[type="date"], input[type="datetime-local"] { min-width: 0; max-width: 100%; -webkit-appearance: none; appearance: none; min-height: 50px; }
   select, textarea {
+    font-family: inherit;
     display: block; width: 100%; margin-top: 6px;
     background: var(--velluto); border: 1px solid transparent; border-radius: 16px; color: var(--testo);
     padding: 14px 16px; font-size: 16px;
@@ -110,9 +111,10 @@
   /* ---------- Schede: Chat e Agenda ---------- */
   #tabs { display: flex; gap: 4px; margin: 6px 20px 8px; padding: 4px; background: var(--velluto); border-radius: 22px; }
   #tabs button {
-    flex: 1; min-height: 40px; border: 0; border-radius: 18px; background: none;
-    color: var(--nebbia); font-weight: 600; cursor: pointer;
+    flex: 1 1 0; min-height: 40px; border: 0; border-radius: 18px; background: none; padding: 0 6px;
+    color: var(--nebbia); font-weight: 600; font-size: .93rem; line-height: 1.1; cursor: pointer;
   }
+  #tabs #tab-capsule { flex: 2.2 1 0; }
   #tabs button[aria-selected="true"] { background: var(--vino); color: var(--testo); }
   .pane { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 
@@ -229,6 +231,40 @@
   }
   .btn-sec.danger { color: var(--errore); border-color: var(--errore); }
 
+  /* ---------- Capsula del tempo ---------- */
+  #capsule-scroll { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 4px 16px 16px; }
+  .cap-stage { display: flex; flex-direction: column; align-items: center; padding: 34px 0 4px; }
+  #capsule { width: min(56vw, 200px); height: auto; overflow: visible; display: block; }
+  #cap-lid { transform-box: view-box; transition: transform .8s cubic-bezier(.3, 1.25, .5, 1); }
+  #capsule.open #cap-lid { transform: translate(68px, -74px) rotate(26deg); }
+  #capsule.has-unread:not(.open) #cap-lid { transform: translate(15px, -14px) rotate(7deg); }
+  #cap-inside { opacity: 0; transition: opacity .4s ease; }
+  #capsule.open #cap-inside, #capsule.has-unread #cap-inside { opacity: 1; }
+  #cap-glow { opacity: 0; transform-box: fill-box; transform-origin: center; transition: opacity .6s ease; }
+  #capsule.has-sealed #cap-glow, #capsule.has-unread #cap-glow { opacity: .85; }
+  #capsule.has-unread #cap-glow { animation: breathe 2.2s ease-in-out infinite; }
+  #capsule.flash #cap-glow { animation: flash 1s ease-out; }
+  @keyframes breathe { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+  @keyframes flash { 0% { opacity: .85; transform: scale(1); } 35% { opacity: 1; transform: scale(2); } 100% { opacity: .85; transform: scale(1); } }
+  .cap-say { text-align: center; font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 1.6rem; line-height: 1.15; margin: 18px 0 4px; }
+  .cap-sub { text-align: center; color: var(--nebbia); font-size: .93rem; margin: 0 auto 6px; max-width: 300px; }
+  .cap-h { margin: 22px 4px 8px; color: var(--nebbia); font-size: .85rem; }
+  .cap-card { display: block; width: 100%; text-align: left; border: 0; border-radius: 20px; background: var(--velluto); color: inherit; padding: 14px 16px; margin-bottom: 8px; }
+  .cap-card .who { font-weight: 700; }
+  .cap-card .meta { color: var(--nebbia); font-size: .86rem; }
+  .cap-card.sealed { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .cap-card.sealed .cbody { flex: 1; min-width: 0; }
+  .cap-card .when { font-size: .95rem; margin: 2px 0; }
+  .cap-card.unread { background: var(--vino); cursor: pointer; }
+  .cap-card.unread .meta { color: #EBD0DA; }
+  .cap-card .text { font-family: var(--serif); font-style: italic; font-size: 1.3rem; line-height: 1.3; margin-top: 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .cap-card.reveal .text { animation: reveal .9s ease both; }
+  @keyframes reveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .cap-remove { flex: none; background: none; border: 0; padding: 8px 0 8px 8px; color: var(--errore); font-size: .86rem; cursor: pointer; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: -4px 0 8px; }
+  .chip { border: 1px solid var(--nebbia); background: none; color: var(--testo); border-radius: 18px; padding: 7px 12px; font-size: .86rem; cursor: pointer; }
+  dialog .hint { margin: 6px 0 12px; font-size: .9rem; }
+
   #toast {
     position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 150px);
     transform: translate(-50%, 8px); opacity: 0; pointer-events: none;
@@ -240,6 +276,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .think .ring { animation: none; display: none; }
+    #capsule.has-unread #cap-glow, #capsule.flash #cap-glow, .cap-card.reveal .text { animation: none; }
+    #cap-lid, #cap-inside, #cap-glow { transition: none; }
     .think, #toast { transition: none; }
   }
 </style>
@@ -288,6 +326,7 @@
   <div id="tabs" role="tablist">
     <button id="tab-chat" role="tab" type="button" aria-selected="true">Chat</button>
     <button id="tab-agenda" role="tab" type="button" aria-selected="false">Agenda</button>
+    <button id="tab-capsule" role="tab" type="button" aria-selected="false">Capsula del tempo</button>
   </div>
 
   <div id="banner" hidden>
@@ -318,7 +357,93 @@
       <button id="add-event" class="primary" type="button">Nuovo appuntamento</button>
     </footer>
   </div>
+
+  <div id="pane-capsule" class="pane" hidden>
+    <div id="capsule-scroll">
+      <div class="cap-stage">
+        <svg id="capsule" viewBox="0 0 240 300" role="img" aria-label="Capsula del tempo">
+          <defs>
+            <linearGradient id="metal" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0" stop-color="#4A3D75"/><stop offset=".28" stop-color="#9483C4"/>
+              <stop offset=".55" stop-color="#6D5CA0"/><stop offset="1" stop-color="#2E2450"/>
+            </linearGradient>
+            <linearGradient id="gold" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0" stop-color="#B9758A"/><stop offset=".4" stop-color="#F3CAD5"/><stop offset="1" stop-color="#A45F76"/>
+            </linearGradient>
+            <radialGradient id="glassOn" cx=".5" cy=".42" r=".65">
+              <stop offset="0" stop-color="#FFF7DE"/><stop offset=".55" stop-color="#F4E4BC"/><stop offset="1" stop-color="#DDA377"/>
+            </radialGradient>
+            <radialGradient id="glassOff" cx=".5" cy=".42" r=".65">
+              <stop offset="0" stop-color="#2E2449"/><stop offset="1" stop-color="#150F26"/>
+            </radialGradient>
+            <radialGradient id="halo">
+              <stop offset="0" stop-color="#F4E4BC" stop-opacity=".75"/><stop offset="1" stop-color="#F4E4BC" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="ground">
+              <stop offset="0" stop-color="#000" stop-opacity=".5"/><stop offset="1" stop-color="#000" stop-opacity="0"/>
+            </radialGradient>
+            <clipPath id="cap-clip"><rect x="-60" y="-300" width="360" height="421"/></clipPath>
+          </defs>
+          <ellipse cx="120" cy="272" rx="80" ry="9" fill="url(#ground)"/>
+          <path d="M60 118H180V200A60 60 0 0 1 60 200Z" fill="url(#metal)"/>
+          <rect x="70" y="134" width="6" height="96" rx="3" fill="#fff" opacity=".13"/>
+          <ellipse id="cap-inside" cx="120" cy="118" rx="60" ry="9" fill="#120C22"/>
+          <g clip-path="url(#cap-clip)">
+            <g id="cap-letter" style="opacity:0">
+              <rect x="-30" y="-20" width="60" height="40" rx="4" fill="#F6ECEE"/>
+              <path d="M-30 -20 0 4 30 -20" fill="none" stroke="#D5C3CE" stroke-width="2"/>
+              <circle cx="0" cy="3" r="7" fill="#C0566F"/>
+              <path d="M0 7C-4.6 3.6-4.2-.2-1.9-.2-.8-.2 0 .7 0 1.5 0 .7.8-.2 1.9-.2 4.2-.2 4.6 3.6 0 7Z" fill="#F6ECEE"/>
+            </g>
+          </g>
+          <g id="cap-lid">
+            <path d="M60 118V100A60 60 0 0 1 180 100V118Z" fill="url(#metal)"/>
+            <path d="M74 98A46 46 0 0 1 106 60" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
+          </g>
+          <rect x="55" y="112" width="130" height="13" rx="6.5" fill="url(#gold)"/>
+          <g fill="#7A4A5C">
+            <circle cx="74" cy="118.5" r="2"/><circle cx="97" cy="118.5" r="2"/><circle cx="120" cy="118.5" r="2"/>
+            <circle cx="143" cy="118.5" r="2"/><circle cx="166" cy="118.5" r="2"/>
+          </g>
+          <circle id="cap-glow" cx="120" cy="182" r="46" fill="url(#halo)"/>
+          <circle cx="120" cy="182" r="31" fill="url(#gold)"/>
+          <circle cx="120" cy="182" r="24" fill="#3A2A55"/>
+          <circle id="cap-glass" cx="120" cy="182" r="22" fill="url(#glassOff)"/>
+          <path d="M104 173A19 19 0 0 1 116 163" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <p class="cap-say" id="cap-say"></p>
+        <p class="cap-sub" id="cap-sub"></p>
+      </div>
+      <div id="capsule-list"></div>
+    </div>
+    <footer>
+      <button id="add-capsule" class="primary" type="button">Aggiungi un messaggio</button>
+    </footer>
+  </div>
 </div>
+
+<dialog id="cap-dialog">
+  <form id="cap-form">
+    <h3>Un messaggio per il futuro</h3>
+    <label>Il tuo messaggio
+      <textarea id="cap-body" maxlength="2000" rows="6" required></textarea>
+    </label>
+    <label>Si aprirà il
+      <input type="date" id="cap-date" required>
+    </label>
+    <div class="chips">
+      <button type="button" class="chip" data-cap-chip="m1">Tra 1 mese</button>
+      <button type="button" class="chip" data-cap-chip="m6">Tra 6 mesi</button>
+      <button type="button" class="chip" data-cap-chip="ann">Al nostro anniversario</button>
+    </div>
+    <p class="hint">Una volta sigillato, nessuno dei due potrà leggerlo prima di quel giorno, nemmeno tu.</p>
+    <p class="error" id="cap-error" role="alert"></p>
+    <button class="primary" type="submit" id="cap-submit">Sigilla nella capsula</button>
+    <div class="actions">
+      <button class="btn-sec" type="button" id="cap-cancel">Annulla</button>
+    </div>
+  </form>
+</dialog>
 
 <dialog id="ev-dialog">
   <form id="ev-form">
@@ -508,7 +633,7 @@ async function startChat() {
     .subscribe();
 
   refreshBanner();
-  setTab(new URLSearchParams(location.search).get("tab") === "agenda" ? "agenda" : "chat");
+  setTab(new URLSearchParams(location.search).get("tab") || "chat");
 }
 
 function renderHeader() {
@@ -661,22 +786,24 @@ document.addEventListener("visibilitychange", () => {
   if (!document.hidden && state.me && !$("chat").hidden) {
     renderCounter(); syncMessages();
     if (!$("pane-agenda").hidden) loadEvents();
+    if (!$("pane-capsule").hidden) loadCapsule();
   }
 });
 
 /* ---------- Schede ---------- */
 
+const TABS = ["chat", "agenda", "capsule"];
 function setTab(name) {
-  const agenda = name === "agenda";
-  $("pane-chat").hidden = agenda;
-  $("pane-agenda").hidden = !agenda;
-  $("tab-chat").setAttribute("aria-selected", String(!agenda));
-  $("tab-agenda").setAttribute("aria-selected", String(agenda));
-  if (agenda) loadEvents();
+  if (!TABS.includes(name)) name = "chat";
+  for (const t of TABS) {
+    $("pane-" + t).hidden = t !== name;
+    $("tab-" + t).setAttribute("aria-selected", String(t === name));
+  }
+  if (name === "agenda") loadEvents();
+  else if (name === "capsule") loadCapsule();
   else { const l = $("messages"); l.scrollTop = l.scrollHeight; }
 }
-$("tab-chat").addEventListener("click", () => setTab("chat"));
-$("tab-agenda").addEventListener("click", () => setTab("agenda"));
+for (const t of TABS) $("tab-" + t).addEventListener("click", () => setTab(t));
 
 /* ---------- Agenda condivisa ---------- */
 
@@ -833,6 +960,175 @@ $("ev-delete").addEventListener("click", async () => {
   $("ev-dialog").close();
   toast("Appuntamento eliminato");
   loadEvents();
+});
+
+/* ---------- Capsula del tempo ---------- */
+
+let capsule = [];
+let justOpened = null;
+const fmtLong = (d) => d.toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+const seenKey = () => "capsule-seen:" + state.me.id;
+function loadSeen() {
+  try { return new Set(JSON.parse(localStorage.getItem(seenKey()) || "[]")); } catch (_) { return new Set(); }
+}
+function saveSeen(set) {
+  try { localStorage.setItem(seenKey(), JSON.stringify([...set])); } catch (_) { /* non è un problema */ }
+}
+function daysFromToday(iso) {
+  const d = new Date(iso), t = new Date();
+  return Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(t.getFullYear(), t.getMonth(), t.getDate())) / 86400000);
+}
+const inDays = (n) => (n <= 0 ? "oggi" : n === 1 ? "domani" : `tra ${n} giorni`);
+
+async function loadCapsule() {
+  const { data, error } = await sb.from("capsule_view").select("*").order("open_at");
+  if (error) { toast("Non riesco a caricare la capsula."); return; }
+  capsule = data;
+  renderCapsule();
+}
+
+function renderCapsule() {
+  const seen = loadSeen();
+  const sealed = capsule.filter((m) => !m.is_open).sort((a, b) => a.open_at.localeCompare(b.open_at));
+  const opened = capsule.filter((m) => m.is_open).sort((a, b) => b.open_at.localeCompare(a.open_at));
+  const unread = opened.filter((m) => !seen.has(m.id));
+  const read = opened.filter((m) => seen.has(m.id));
+
+  const svg = $("capsule");
+  svg.classList.toggle("has-sealed", sealed.length > 0);
+  svg.classList.toggle("has-unread", unread.length > 0);
+  $("cap-glass").setAttribute("fill", sealed.length + unread.length > 0 ? "url(#glassOn)" : "url(#glassOff)");
+
+  if (unread.length) {
+    $("cap-say").textContent = unread.length === 1 ? "C'è un messaggio da aprire!" : `Ci sono ${unread.length} messaggi da aprire!`;
+    $("cap-sub").textContent = unread.length === 1 ? "Toccalo qui sotto per leggerlo." : "Toccali qui sotto per leggerli.";
+  } else if (sealed.length) {
+    $("cap-say").textContent = sealed.length === 1 ? "1 messaggio sigillato" : `${sealed.length} messaggi sigillati`;
+    const n = sealed[0];
+    $("cap-sub").textContent = `Il prossimo si apre il ${fmtLong(new Date(n.open_at))}, ${inDays(daysFromToday(n.open_at))}.`;
+  } else {
+    $("cap-say").textContent = "La capsula è vuota";
+    $("cap-sub").textContent = "Metti dentro il primo messaggio: si aprirà il giorno che scegli.";
+  }
+
+  const root = $("capsule-list");
+  root.replaceChildren();
+  const section = (title, cards) => {
+    if (!cards.length) return;
+    root.append(el("div", "cap-h", title));
+    cards.forEach((c) => root.append(c));
+  };
+  section("Da aprire", unread.map((m) => openedCard(m, false)));
+  section("Ancora sigillati", sealed.map(sealedCard));
+  section("Già aperti", read.map((m) => openedCard(m, true)));
+  justOpened = null;
+}
+
+const whoIs = (m) => (m.author === state.me.id ? "Scritto da te" : `Da ${state.partnerName || "l'altra persona"}`);
+
+function sealedCard(m) {
+  const c = el("div", "cap-card sealed");
+  const body = el("div", "cbody");
+  body.append(el("div", "who", whoIs(m)));
+  body.append(el("div", "when", `Si apre il ${fmtLong(new Date(m.open_at))}, ${inDays(daysFromToday(m.open_at))}`));
+  body.append(el("div", "meta", `Sigillato il ${fmtLong(new Date(m.created_at))}`));
+  c.append(body);
+  if (m.author === state.me.id) {
+    const rm = el("button", "cap-remove", "Rimuovi");
+    rm.type = "button";
+    rm.addEventListener("click", () => removeCapsule(m.id));
+    c.append(rm);
+  }
+  return c;
+}
+
+function openedCard(m, isRead) {
+  const c = el(isRead ? "div" : "button", "cap-card" + (isRead ? "" : " unread") + (m.id === justOpened ? " reveal" : ""));
+  if (!isRead) c.type = "button";
+  c.append(el("div", "who", whoIs(m)));
+  c.append(el("div", "meta", `Scritto il ${fmtLong(new Date(m.created_at))}, aperto il ${fmtLong(new Date(m.open_at))}`));
+  if (isRead) c.append(el("div", "text", m.body || ""));
+  else {
+    c.append(el("div", "who", "Tocca per aprire"));
+    c.addEventListener("click", () => {
+      const seen = loadSeen(); seen.add(m.id); saveSeen(seen);
+      justOpened = m.id;
+      renderCapsule();
+    });
+  }
+  return c;
+}
+
+async function removeCapsule(id) {
+  if (!confirm("Togliere questo messaggio dalla capsula? Non si potrà recuperare.")) return;
+  const { error } = await sb.rpc("capsule_delete", { p_id: id });
+  if (error) { console.error(error); toast("Non sono riuscito a toglierlo."); return; }
+  toast("Messaggio tolto dalla capsula");
+  loadCapsule();
+}
+
+/* ---- inserimento di un nuovo messaggio ---- */
+
+function chipDate(kind) {
+  const t = new Date();
+  if (kind === "ann") {
+    const d = new Date(t.getFullYear(), TOGETHER_SINCE.getMonth(), TOGETHER_SINCE.getDate());
+    return d <= t ? new Date(t.getFullYear() + 1, d.getMonth(), d.getDate()) : d;
+  }
+  const first = new Date(t.getFullYear(), t.getMonth() + (kind === "m1" ? 1 : 6), 1);
+  first.setDate(Math.min(t.getDate(), new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate()));
+  return first;
+}
+
+$("add-capsule").addEventListener("click", () => {
+  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+  $("cap-body").value = ""; $("cap-date").value = ""; $("cap-error").textContent = "";
+  $("cap-date").min = toDateInput(tomorrow);
+  $("cap-dialog").showModal();
+});
+$("cap-cancel").addEventListener("click", () => $("cap-dialog").close());
+document.querySelectorAll("[data-cap-chip]").forEach((b) =>
+  b.addEventListener("click", () => { $("cap-date").value = toDateInput(chipDate(b.dataset.capChip)); }));
+
+function sealAnimation() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return Promise.resolve();
+  const svg = $("capsule"), letter = $("cap-letter");
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  return (async () => {
+    svg.classList.add("open");                       // il coperchio si solleva
+    await wait(800);
+    letter.style.opacity = 1;                        // la lettera scende dentro
+    const anim = letter.animate([
+      { transform: "translate(120px, -34px) rotate(-8deg)" },
+      { transform: "translate(120px, 44px) rotate(0deg)", offset: 0.55 },
+      { transform: "translate(120px, 180px) rotate(0deg)" },
+    ], { duration: 1200, easing: "ease-in-out", fill: "forwards" });
+    await anim.finished;
+    letter.style.opacity = 0; anim.cancel();
+    svg.classList.remove("open");                    // il coperchio si richiude
+    await wait(700);
+    svg.classList.add("flash");                      // l'oblò si illumina
+    await wait(1000);
+    svg.classList.remove("flash");
+  })();
+}
+
+$("cap-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("cap-error").textContent = "";
+  const body = $("cap-body").value.trim();
+  const openAt = new Date(`${$("cap-date").value}T09:00`);
+  if (!body) { $("cap-error").textContent = "Scrivi il messaggio."; return; }
+  if (isNaN(openAt) || openAt <= new Date()) { $("cap-error").textContent = "Scegli un giorno futuro."; return; }
+  const btn = $("cap-submit");
+  btn.disabled = true;
+  const { error } = await sb.from("capsule_messages").insert({ body, open_at: openAt.toISOString() });
+  btn.disabled = false;
+  if (error) { console.error(error); $("cap-error").textContent = "Non sono riuscito a sigillare il messaggio. Riprova."; return; }
+  $("cap-dialog").close();
+  await sealAnimation();
+  toast("Messaggio sigillato nella capsula");
+  loadCapsule();
 });
 
 /* ---------- Notifiche ---------- */
