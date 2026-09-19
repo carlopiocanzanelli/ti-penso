@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ti penso</title>
-<meta name="theme-color" content="#1E1830">
+<meta name="theme-color" content="#211A3A">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -14,61 +14,64 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600;1,700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --notte: #1E1830;      /* sfondo */
-    --prugna: #2D2444;     /* superfici e messaggi ricevuti */
-    --viola: #54467F;      /* messaggi inviati */
-    --lavanda: #E9E4F7;    /* testo */
-    --nebbia: #9E96BC;     /* testo secondario */
-    --lanterna: #FFB35C;   /* SOLO per il "pensiero" */
-    --inchiostro: #2A1B0E; /* testo sopra la lanterna */
-    --errore: #FF9A9A;
+    --crepuscolo: #211A3A;  /* sfondo: cielo poco dopo il tramonto */
+    --velluto: #2E2244;     /* messaggi ricevuti e campi */
+    --vino: #8F4262;        /* messaggi inviati */
+    --luna: #F4E4BC;        /* la luna: pulsante e pensieri */
+    --inchiostro: #2A1F3D;  /* testo sopra la luna */
+    --testo: #F6ECEE;
+    --nebbia: #B3A2BD;
+    --errore: #FF9FB0;
+    --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
   }
 
   * { box-sizing: border-box; }
   html, body { height: 100%; margin: 0; }
   body {
-    background: var(--notte);
-    color: var(--lavanda);
-    font-family: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--crepuscolo);
+    color: var(--testo);
+    font-family: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     font-size: 16px;
-    line-height: 1.4;
+    line-height: 1.45;
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
   }
   [hidden] { display: none !important; }
   button, input { font: inherit; color: inherit; }
-  :focus-visible { outline: 2px solid var(--lanterna); outline-offset: 2px; }
+  :focus-visible { outline: 2px solid var(--luna); outline-offset: 2px; }
 
-  /* ---------- Schermate di accesso ---------- */
+  /* ---------- Accesso ---------- */
   .screen {
     min-height: 100dvh;
     display: flex; flex-direction: column; justify-content: center;
     max-width: 380px; margin: 0 auto;
-    padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+    padding: max(24px, env(safe-area-inset-top)) 28px max(24px, env(safe-area-inset-bottom));
   }
-  .orb {
-    width: 64px; height: 64px; border-radius: 50%;
-    background: var(--lanterna);
-    box-shadow: 0 0 0 14px rgba(255,179,92,.12), 0 0 60px 16px rgba(255,179,92,.35);
-    margin: 0 0 40px 14px;
+  .hero-moon {
+    width: 104px; height: 104px; margin: 0 0 22px 6px; color: var(--luna);
+    filter: drop-shadow(0 0 22px rgba(244,228,188,.45)) drop-shadow(0 0 60px rgba(201,120,143,.35));
   }
-  h1 { font-size: 2.8rem; line-height: 1.05; letter-spacing: -0.03em; font-weight: 700; margin: 0 0 24px; }
-  .hint { color: var(--nebbia); margin: -8px 0 20px; }
+  .hero-moon svg { width: 100%; height: 100%; fill: currentColor; display: block; }
+  h1 {
+    font-family: var(--serif); font-style: italic; font-weight: 600;
+    font-size: 3.6rem; line-height: 1; letter-spacing: -0.01em; margin: 0 0 28px;
+  }
+  .hint { color: var(--nebbia); margin: -12px 0 22px; }
   label { display: block; margin-bottom: 14px; color: var(--nebbia); font-size: .95rem; }
   input {
     display: block; width: 100%; margin-top: 6px;
-    background: var(--prugna); border: 1px solid transparent; border-radius: 14px;
+    background: var(--velluto); border: 1px solid transparent; border-radius: 16px;
     padding: 14px 16px; font-size: 16px; /* 16px evita lo zoom su iPhone */
   }
   input::placeholder { color: var(--nebbia); }
   input:focus { border-color: var(--nebbia); outline: none; }
   .error { color: var(--errore); min-height: 1.4em; margin: 0 0 8px; }
   .primary {
-    width: 100%; min-height: 52px; border: 0; border-radius: 26px;
-    background: var(--lavanda); color: var(--notte); font-weight: 700; font-size: 1.05rem; cursor: pointer;
+    width: 100%; min-height: 54px; border: 0; border-radius: 27px;
+    background: var(--luna); color: var(--inchiostro); font-weight: 700; font-size: 1.05rem; cursor: pointer;
   }
   .primary:active { transform: scale(.98); }
 
@@ -80,20 +83,23 @@
   }
   header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 20px 10px;
+    padding: 12px 22px 8px;
   }
-  header h2 { margin: 0; font-size: 1.6rem; letter-spacing: -0.02em; font-weight: 700; }
+  header h2 {
+    margin: 0; font-family: var(--serif); font-style: italic; font-weight: 600;
+    font-size: 2.1rem; line-height: 1.1; letter-spacing: 0;
+  }
   .ghost { background: none; border: 0; color: var(--nebbia); padding: 10px; margin: -10px; cursor: pointer; border-radius: 10px; }
 
   #banner {
-    margin: 0 16px 8px; padding: 12px 14px; border-radius: 14px;
-    background: var(--prugna); color: var(--lavanda); font-size: .93rem;
+    margin: 0 16px 8px; padding: 12px 14px; border-radius: 16px;
+    background: var(--velluto); color: var(--testo); font-size: .93rem;
     display: flex; gap: 12px; align-items: center; justify-content: space-between;
   }
   #banner p { margin: 0; }
   .small {
     flex: none; min-height: 40px; padding: 0 14px; border: 0; border-radius: 20px;
-    background: var(--lavanda); color: var(--notte); font-weight: 700; cursor: pointer;
+    background: var(--luna); color: var(--inchiostro); font-weight: 700; cursor: pointer;
   }
 
   #messages {
@@ -101,66 +107,74 @@
     display: flex; flex-direction: column; gap: 6px;
     padding: 8px 16px 16px;
   }
-  .empty { margin: auto; text-align: center; color: var(--nebbia); max-width: 260px; }
-  .day { align-self: center; margin: 14px 0 6px; color: var(--nebbia); font-size: .85rem; }
+  .empty {
+    margin: auto; text-align: center; max-width: 250px; color: var(--nebbia);
+    font-family: var(--serif); font-style: italic; font-size: 1.3rem; line-height: 1.3;
+  }
+  .day { align-self: center; margin: 14px 0 6px; color: var(--nebbia); font-size: .82rem; }
 
   .msg {
-    max-width: 80%; padding: 9px 13px 7px; border-radius: 18px;
+    max-width: 80%; padding: 9px 14px 7px; border-radius: 20px;
     overflow-wrap: anywhere; white-space: pre-wrap;
   }
   .msg .t { display: block; margin-top: 2px; text-align: right; font-size: .72rem; color: var(--nebbia); }
-  .msg.mine   { align-self: flex-end;   background: var(--viola);  border-bottom-right-radius: 6px; }
-  .msg.theirs { align-self: flex-start; background: var(--prugna); border-bottom-left-radius: 6px; }
-  .msg.mine .t { color: #C9C0E6; }
+  .msg.mine   { align-self: flex-end;   background: var(--vino);    border-bottom-right-radius: 6px; }
+  .msg.theirs { align-self: flex-start; background: var(--velluto); border-bottom-left-radius: 6px; }
+  .msg.mine .t { color: #EBD0DA; }
 
-  /* Il "pensiero": l'unico elemento che usa il colore lanterna */
+  /* Il "pensiero": la luna, usata solo qui e sul pulsante */
   .thought {
-    align-self: center; display: flex; align-items: center; gap: 10px;
-    margin: 8px 0; color: var(--lanterna); font-size: .95rem;
+    align-self: center; display: flex; align-items: center; gap: 9px;
+    margin: 10px 0; color: var(--luna);
   }
-  .thought .dot {
-    width: 10px; height: 10px; border-radius: 50%; background: var(--lanterna);
-    box-shadow: 0 0 0 4px rgba(255,179,92,.16), 0 0 14px 3px rgba(255,179,92,.5);
+  .thought .moon {
+    width: 20px; height: 20px; flex: none; color: var(--luna);
+    filter: drop-shadow(0 0 7px rgba(244,228,188,.75));
   }
-  .thought.mine { color: var(--nebbia); }
-  .thought.mine .dot { background: var(--nebbia); box-shadow: 0 0 0 4px rgba(158,150,188,.14); }
+  .thought .moon svg { width: 100%; height: 100%; fill: currentColor; display: block; }
+  .thought .tx { font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 1.2rem; }
   .thought .t { color: var(--nebbia); font-size: .75rem; }
+  .thought.mine { color: var(--nebbia); }
+  .thought.mine .moon { color: var(--nebbia); filter: none; }
 
   footer { padding: 8px 16px max(14px, env(safe-area-inset-bottom)); }
   #msg-form { display: flex; gap: 8px; margin-bottom: 12px; }
-  #msg-form input { margin: 0; border-radius: 24px; padding: 13px 18px; }
+  #msg-form input { margin: 0; border-radius: 26px; padding: 13px 18px; }
   .send {
     flex: none; width: 48px; height: 48px; border: 0; border-radius: 50%;
-    background: var(--prugna); color: var(--lavanda); cursor: pointer;
+    background: var(--velluto); color: var(--testo); cursor: pointer;
     display: grid; place-items: center;
   }
-  .send:active { background: var(--viola); }
+  .send:active { background: var(--vino); }
   .send svg { width: 22px; height: 22px; }
 
   .think {
-    position: relative; width: 100%; min-height: 62px; border: 0; border-radius: 31px;
-    background: var(--lanterna); color: var(--inchiostro);
-    font-weight: 700; font-size: 1.25rem; letter-spacing: -0.01em; cursor: pointer;
-    box-shadow: 0 6px 34px rgba(255,179,92,.28);
+    position: relative; width: 100%; min-height: 64px; border: 0; border-radius: 32px;
+    background: var(--luna); color: var(--inchiostro);
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    font-family: var(--serif); font-style: italic; font-weight: 700; font-size: 1.75rem; line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 0 44px rgba(244,228,188,.26), 0 0 90px rgba(201,120,143,.20);
     transition: transform .12s ease, opacity .2s ease;
   }
+  .think svg { width: 24px; height: 24px; fill: currentColor; flex: none; }
   .think:active { transform: scale(.985); }
-  .think[aria-disabled="true"] { opacity: .55; }
+  .think[aria-disabled="true"] { opacity: .6; }
   .think .ring {
     position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-    border: 2px solid var(--lanterna);
-    animation: ring .9s ease-out forwards;
+    border: 2px solid var(--luna);
+    animation: ring 1s ease-out forwards;
   }
   @keyframes ring {
     from { transform: scale(1);    opacity: .9; }
-    to   { transform: scale(1.22, 1.9); opacity: 0; }
+    to   { transform: scale(1.2, 1.9); opacity: 0; }
   }
 
   #toast {
     position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 150px);
     transform: translate(-50%, 8px); opacity: 0; pointer-events: none;
-    background: var(--lavanda); color: var(--notte);
-    padding: 10px 16px; border-radius: 16px; font-size: .93rem; max-width: 86vw; text-align: center;
+    background: var(--testo); color: var(--inchiostro);
+    padding: 10px 16px; border-radius: 18px; font-size: .93rem; max-width: 86vw; text-align: center;
     transition: opacity .2s ease, transform .2s ease;
   }
   #toast.show { opacity: 1; transform: translate(-50%, 0); }
@@ -175,7 +189,7 @@
 
 <!-- Accesso -->
 <main id="login" class="screen" hidden>
-  <div class="orb" aria-hidden="true"></div>
+  <div class="hero-moon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
   <h1>Ti penso</h1>
   <form id="login-form">
     <label>Email
@@ -223,7 +237,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
       </button>
     </form>
-    <button id="think" class="think" type="button">Ti penso</button>
+    <button id="think" class="think" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <span>Ti penso</span>
+    </button>
   </footer>
 </div>
 
@@ -235,6 +252,7 @@
 "use strict";
 
 const $ = (id) => document.getElementById(id);
+const MOON_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 const state = { me: null, myName: null, partnerName: null, channel: null, seen: new Set(), lastDay: null };
 let sb = null;
 
@@ -398,7 +416,7 @@ async function syncMessages() {
   if (data.length === 0) {
     const p = document.createElement("p");
     p.id = "empty"; p.className = "empty";
-    p.textContent = "Ancora nessun messaggio. Scrivi qualcosa o premi «Ti penso».";
+    p.textContent = "Ancora nessun messaggio. Scrivi qualcosa o manda un pensiero.";
     list.appendChild(p);
     return;
   }
@@ -428,8 +446,8 @@ function addMessage(m) {
 
   if (m.kind === "thinking") {
     el.className = "thought " + (mine ? "mine" : "theirs");
-    const dot = document.createElement("span"); dot.className = "dot";
-    const txt = document.createElement("span");
+    const dot = document.createElement("span"); dot.className = "moon"; dot.innerHTML = MOON_SVG;
+    const txt = document.createElement("span"); txt.className = "tx";
     txt.textContent = mine ? "Hai mandato un pensiero" : `${otherName()} ti sta pensando`;
     const t = document.createElement("span"); t.className = "t"; t.textContent = time;
     el.append(dot, txt, t);
