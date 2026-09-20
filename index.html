@@ -99,9 +99,11 @@
   }
   .who { min-width: 0; }
   .counter {
-    display: block; background: none; border: 0; margin: 2px 0 0; padding: 4px 0;
-    color: var(--nebbia); font-size: .93rem; text-align: left; cursor: pointer; border-radius: 6px;
+    display: block; width: calc(100% - 44px); margin: 0 22px 8px; padding: 2px 0; background: none; border: 0; border-radius: 6px;
+    text-align: left; cursor: pointer; color: var(--nebbia);
+    font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 1.14rem; line-height: 1.25;
   }
+  .counter b { color: var(--testo); font-weight: 700; font-variant-numeric: lining-nums tabular-nums; }
   header h2 {
     margin: 0; font-family: var(--serif); font-style: italic; font-weight: 600;
     font-size: 2.1rem; line-height: 1.1; letter-spacing: 0;
@@ -405,12 +407,11 @@
 <!-- Chat -->
 <div id="chat" hidden>
   <header>
-    <div class="who">
-      <h2 id="partner-name">…</h2>
-      <button id="counter" class="counter" type="button" hidden></button>
-    </div>
+    <h2 id="partner-name">…</h2>
     <button id="logout" class="ghost" type="button">Esci</button>
   </header>
+
+  <button id="counter" class="counter" type="button" hidden>Sono <b id="c-d">0</b>&nbsp;<span id="c-du">giorni</span>, <b id="c-h">0</b>&nbsp;<span id="c-hu">ore</span>, <b id="c-m">0</b>&nbsp;<span id="c-mu">minuti</span> e <b id="c-s">0</b>&nbsp;<span id="c-su">secondi</span> che ti amo</button>
 
   <div id="tabs" role="tablist">
     <button id="tab-chat" role="tab" type="button" aria-selected="true">Chat</button>
@@ -803,6 +804,7 @@ $("logout").addEventListener("click", async () => {
 });
 
 function teardown() {
+  clearTimeout(counterTimer);
   if (state.channel) { sb.removeChannel(state.channel); state.channel = null; }
   state.me = null; state.myName = null; state.partnerName = null;
   state.seen.clear(); state.lastDay = null;
@@ -855,14 +857,26 @@ function togetherInfo() {
   return { days, months, rest };
 }
 
+let counterTimer = null;
+function tickCounter() {
+  const total = Math.floor((Date.now() - TOGETHER_SINCE.getTime()) / 1000);
+  if (total < 0) { $("counter").hidden = true; return; }
+  const parts = [
+    ["d", Math.floor(total / 86400), "giorno", "giorni"],
+    ["h", Math.floor((total % 86400) / 3600), "ora", "ore"],
+    ["m", Math.floor((total % 3600) / 60), "minuto", "minuti"],
+    ["s", total % 60, "secondo", "secondi"],
+  ];
+  for (const [k, n, one, many] of parts) {
+    $("c-" + k).textContent = n;
+    $("c-" + k + "u").textContent = n === 1 ? one : many;
+  }
+  $("counter").hidden = false;
+  counterTimer = setTimeout(tickCounter, 1000 - (Date.now() % 1000) + 10);   // scatta all'inizio di ogni secondo
+}
 function renderCounter() {
-  const el = $("counter");
-  const { days } = togetherInfo();
-  if (days < 0) { el.hidden = true; return; }
-  el.textContent = days === 0 ? "Il primo giorno insieme"
-                 : days === 1 ? "1 giorno insieme"
-                 : `${days} giorni insieme`;
-  el.hidden = false;
+  clearTimeout(counterTimer);
+  tickCounter();
 }
 
 $("counter").addEventListener("click", () => {
@@ -982,6 +996,7 @@ $("think").addEventListener("click", async () => {
 });
 
 document.addEventListener("visibilitychange", () => {
+  if (document.hidden) clearTimeout(counterTimer);          // a schermo spento il conto si ferma
   if (!document.hidden && state.me && !$("chat").hidden) {
     renderCounter(); syncMessages();
     if (!$("pane-agenda").hidden) loadEvents();
