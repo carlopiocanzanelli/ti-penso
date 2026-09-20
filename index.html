@@ -289,7 +289,8 @@
   #album-when { margin: 2px 4px; color: var(--testo); }
   #album-count { margin: 0 4px 10px; color: var(--nebbia); font-size: .88rem; }
   #album-desc { margin: 8px 4px 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .album-actions { display: flex; gap: 10px; margin: 0 0 14px; }
+  .album-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 14px; }
+  .btn-sec.fill { background: var(--luna); color: var(--inchiostro); border-color: var(--luna); }
   .btn-sec.ready { background: var(--luna); color: var(--inchiostro); border-color: var(--luna); }
   .btn-sec:disabled { opacity: .6; }
   .upload { margin: 0 4px 12px; color: var(--nebbia); font-size: .9rem; }
@@ -299,6 +300,15 @@
   .tile { display: block; padding: 0; border: 0; border-radius: 6px; overflow: hidden; background: var(--velluto); aspect-ratio: 1; cursor: pointer; }
   .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .mem-empty { grid-column: 1 / -1; text-align: center; color: var(--nebbia); font-family: var(--serif); font-style: italic; font-size: 1.3rem; margin: 26px auto; max-width: 260px; }
+
+  .tile.add { display: grid; place-content: center; gap: 2px; background: none; border: 2px dashed var(--nebbia); color: var(--nebbia); font-size: .82rem; text-align: center; }
+  .tile.add .plus { font-size: 1.9rem; line-height: 1; color: var(--testo); }
+  .tile.current { outline: 3px solid var(--luna); outline-offset: -3px; }
+  #cover-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 4px 0 14px; }
+  .pick-lbl { color: var(--nebbia); font-size: .95rem; margin-bottom: 6px; }
+  .pick { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .pick .btn-sec { flex: none; padding: 0 18px; }
+  .pick .hint { margin: 0; }
 
   #viewer { width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; border-radius: 0; background: #0D0A18; }
   #viewer[open] { display: flex; flex-direction: column; }
@@ -312,6 +322,37 @@
   .v-more { display: flex; gap: 10px; margin-top: 10px; }
   #v-save:disabled { opacity: .55; }
 
+  /* ---------- La lettera che si apre ---------- */
+  #letter-dialog { width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; border-radius: 0; background: #0D0A18; overflow: hidden; }
+  #letter-dialog[open] { display: flex; align-items: center; justify-content: center; }
+  .lt-stage { position: relative; width: min(84vw, 330px); }
+  .lt-env { position: relative; width: 100%; aspect-ratio: 3 / 2; perspective: 900px; opacity: 0; transform: translateY(16px) scale(.96); transition: opacity .5s ease, transform .6s ease; }
+  #letter-dialog.show .lt-env { opacity: 1; transform: none; }
+  .lt-back { position: absolute; inset: 0; border-radius: 8px; background: #94506A; box-shadow: 0 22px 46px rgba(0, 0, 0, .55); }
+  .lt-paper { position: absolute; left: 7%; right: 7%; top: 9%; bottom: 9%; z-index: 2; border-radius: 3px; background: #F6ECEE; transition: transform 1s cubic-bezier(.3, .8, .3, 1); }
+  .lt-front { position: absolute; inset: 0; z-index: 3; border-radius: 8px; background: #B8657F; clip-path: polygon(0 0, 50% 58%, 100% 0, 100% 100%, 0 100%); }
+  .lt-flap { position: absolute; left: 0; top: 0; width: 100%; height: 58%; z-index: 4; background: #D58BA1; clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: top center; transition: transform .75s ease, z-index 0s .38s; }
+  .lt-seal { position: absolute; left: 50%; top: 58%; width: 46px; height: 46px; margin: -23px 0 0 -23px; z-index: 5; border-radius: 50%; background: #C0566F; display: grid; place-items: center; box-shadow: 0 3px 8px rgba(0, 0, 0, .4); transition: transform .4s ease, opacity .4s ease; }
+  .lt-seal svg { width: 22px; height: 22px; fill: #F6ECEE; }
+  #letter-dialog.open .lt-flap { transform: rotateX(180deg); z-index: 1; }
+  #letter-dialog.open .lt-seal { transform: scale(1.8); opacity: 0; }
+  #letter-dialog.out .lt-paper { transform: translateY(-66%); }
+  #letter-dialog.read .lt-env { opacity: 0; transform: translateY(80px) scale(.92); }
+  .lt-sheet {
+    position: absolute; left: 50%; top: 50%; width: min(90vw, 390px); max-height: 68dvh; overflow-y: auto;
+    padding: 26px 24px 20px; border-radius: 6px; background: #F6ECEE; color: var(--inchiostro);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .6); opacity: 0; pointer-events: none;
+    transform: translate(-50%, -42%) scale(.5);
+    transition: transform .95s cubic-bezier(.2, .9, .3, 1), opacity .5s ease;
+  }
+  #letter-dialog.read .lt-sheet { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+  .lt-from { font-weight: 700; color: #6B5A72; font-size: .92rem; }
+  .lt-text { font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 1.45rem; line-height: 1.35; margin: 10px 0 18px; white-space: pre-wrap; overflow-wrap: anywhere; opacity: 0; transition: opacity .7s ease .5s; }
+  #letter-dialog.read .lt-text { opacity: 1; }
+  .lt-date { font-size: .8rem; color: #6B5A72; }
+  .lt-close { position: absolute; left: 16px; right: 16px; bottom: max(18px, env(safe-area-inset-bottom)); width: auto; opacity: 0; pointer-events: none; transition: opacity .5s ease .7s; }
+  #letter-dialog.read .lt-close { opacity: 1; pointer-events: auto; }
+
   #toast {
     position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 150px);
     transform: translate(-50%, 8px); opacity: 0; pointer-events: none;
@@ -323,6 +364,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .think .ring { animation: none; display: none; }
+    .lt-env, .lt-paper, .lt-flap, .lt-seal, .lt-sheet, .lt-text, .lt-close { transition: none; }
     #capsule.has-unread #cap-glow, #capsule.flash #cap-glow, .cap-card.reveal .text { animation: none; }
     #cap-lid, #cap-inside, #cap-glow { transition: none; }
     .think, #toast { transition: none; }
@@ -489,6 +531,8 @@
         <p id="album-count"></p>
         <p id="album-desc" hidden></p>
         <div class="album-actions">
+          <button class="btn-sec fill" type="button" id="album-add">Aggiungi foto</button>
+          <button class="btn-sec" type="button" id="album-cover">Copertina</button>
           <button class="btn-sec" type="button" id="album-edit">Modifica</button>
           <button class="btn-sec" type="button" id="album-download">Scarica tutte</button>
         </div>
@@ -518,6 +562,12 @@
     <label>Descrizione (facoltativa)
       <textarea id="alb-desc" maxlength="2000" rows="4"></textarea>
     </label>
+    <div class="pick-lbl" id="alb-pick-lbl">Foto (facoltative)</div>
+    <div class="pick" id="alb-pickrow">
+      <button class="btn-sec" type="button" id="alb-pick">Scegli le foto</button>
+      <span class="hint" id="alb-picked"></span>
+    </div>
+    <input type="file" id="alb-files" accept="image/*" multiple hidden>
     <p class="error" id="alb-error" role="alert"></p>
     <button class="primary" type="submit">Salva</button>
     <div class="actions">
@@ -525,6 +575,15 @@
       <button class="btn-sec danger" type="button" id="alb-delete" hidden>Elimina raccolta</button>
     </div>
   </form>
+</dialog>
+
+<dialog id="cover-dialog">
+  <div style="padding: 22px 20px 18px">
+    <h3 style="margin: 0 0 6px; font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 1.9rem; line-height: 1.1;">Scegli la copertina</h3>
+    <p class="hint" style="margin: 0 0 12px">Tocca la foto che vuoi usare come copertina della raccolta.</p>
+    <div id="cover-grid"></div>
+    <button class="btn-sec" type="button" id="cover-cancel" style="width: 100%">Annulla</button>
+  </div>
 </dialog>
 
 <dialog id="viewer">
@@ -543,21 +602,40 @@
   </div>
 </dialog>
 
+<dialog id="letter-dialog" aria-label="Messaggio della capsula del tempo">
+  <div class="lt-stage">
+    <div class="lt-env">
+      <div class="lt-back"></div>
+      <div class="lt-paper"></div>
+      <div class="lt-front"></div>
+      <div class="lt-flap"></div>
+      <div class="lt-seal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+    </div>
+    <div class="lt-sheet">
+      <div class="lt-from" id="lt-from"></div>
+      <div class="lt-text" id="lt-text"></div>
+      <div class="lt-date" id="lt-date"></div>
+    </div>
+  </div>
+  <button type="button" class="primary lt-close" id="lt-close">Chiudi</button>
+</dialog>
+
 <dialog id="cap-dialog">
   <form id="cap-form">
     <h3>Un messaggio per il futuro</h3>
     <label>Il tuo messaggio
       <textarea id="cap-body" maxlength="2000" rows="6" required></textarea>
     </label>
-    <label>Si aprirà il
-      <input type="date" id="cap-date" required>
+    <label>Si aprirà il giorno e all'ora
+      <input type="datetime-local" id="cap-date" required>
     </label>
     <div class="chips">
+      <button type="button" class="chip" data-cap-chip="h1">Tra 1 ora</button>
       <button type="button" class="chip" data-cap-chip="m1">Tra 1 mese</button>
       <button type="button" class="chip" data-cap-chip="m6">Tra 6 mesi</button>
       <button type="button" class="chip" data-cap-chip="ann">Al nostro anniversario</button>
     </div>
-    <p class="hint">Una volta sigillato, nessuno dei due potrà leggerlo prima di quel giorno, nemmeno tu.</p>
+    <p class="hint">Una volta sigillato, nessuno dei due potrà leggerlo prima di quel momento, nemmeno tu.</p>
     <p class="error" id="cap-error" role="alert"></p>
     <button class="primary" type="submit" id="cap-submit">Sigilla nella capsula</button>
     <div class="actions">
@@ -1089,6 +1167,7 @@ $("ev-delete").addEventListener("click", async () => {
 
 let capsule = [];
 let justOpened = null;
+let capsuleTimer = null;
 const fmtLong = (d) => d.toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
 const seenKey = () => "capsule-seen:" + state.me.id;
 function loadSeen() {
@@ -1102,6 +1181,16 @@ function daysFromToday(iso) {
   return Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(t.getFullYear(), t.getMonth(), t.getDate())) / 86400000);
 }
 const inDays = (n) => (n <= 0 ? "oggi" : n === 1 ? "domani" : `tra ${n} giorni`);
+function untilText(iso) {
+  const ms = new Date(iso) - Date.now();
+  if (ms <= 0) return "adesso";
+  const mins = Math.ceil(ms / 60000);
+  if (mins < 60) return `tra ${mins} ${mins === 1 ? "minuto" : "minuti"}`;
+  const d = daysFromToday(iso);
+  if (d === 0) { const hrs = Math.floor(mins / 60); return `tra ${hrs} ${hrs === 1 ? "ora" : "ore"}`; }
+  return inDays(d);
+}
+const whenText = (iso) => { const d = new Date(iso); return `${fmtLong(d)} alle ${fmtTime(d)}`; };
 
 async function loadCapsule() {
   const { data, error } = await sb.from("capsule_view").select("*").order("open_at");
@@ -1128,7 +1217,7 @@ function renderCapsule() {
   } else if (sealed.length) {
     $("cap-say").textContent = sealed.length === 1 ? "1 messaggio sigillato" : `${sealed.length} messaggi sigillati`;
     const n = sealed[0];
-    $("cap-sub").textContent = `Il prossimo si apre il ${fmtLong(new Date(n.open_at))}, ${inDays(daysFromToday(n.open_at))}.`;
+    $("cap-sub").textContent = `Il prossimo si apre il ${whenText(n.open_at)}, ${untilText(n.open_at)}.`;
   } else {
     $("cap-say").textContent = "La capsula è vuota";
     $("cap-sub").textContent = "Metti dentro il primo messaggio: si aprirà il giorno che scegli.";
@@ -1145,6 +1234,11 @@ function renderCapsule() {
   section("Ancora sigillati", sealed.map(sealedCard));
   section("Già aperti", read.map((m) => openedCard(m, true)));
   justOpened = null;
+  clearTimeout(capsuleTimer);
+  if (sealed.length) {
+    const ms = new Date(sealed[0].open_at) - Date.now();
+    if (ms > 0 && ms < 2000000000) capsuleTimer = setTimeout(loadCapsule, ms + 2000);
+  }
 }
 
 const whoIs = (m) => (m.author === state.me.id ? "Scritto da te" : `Da ${state.partnerName || "l'altra persona"}`);
@@ -1153,8 +1247,8 @@ function sealedCard(m) {
   const c = el("div", "cap-card sealed");
   const body = el("div", "cbody");
   body.append(el("div", "who", whoIs(m)));
-  body.append(el("div", "when", `Si apre il ${fmtLong(new Date(m.open_at))}, ${inDays(daysFromToday(m.open_at))}`));
-  body.append(el("div", "meta", `Sigillato il ${fmtLong(new Date(m.created_at))}`));
+  body.append(el("div", "when", `Si apre il ${whenText(m.open_at)}, ${untilText(m.open_at)}`));
+  body.append(el("div", "meta", `Sigillato il ${whenText(m.created_at)}`));
   c.append(body);
   if (m.author === state.me.id) {
     const rm = el("button", "cap-remove", "Rimuovi");
@@ -1169,15 +1263,11 @@ function openedCard(m, isRead) {
   const c = el(isRead ? "div" : "button", "cap-card" + (isRead ? "" : " unread") + (m.id === justOpened ? " reveal" : ""));
   if (!isRead) c.type = "button";
   c.append(el("div", "who", whoIs(m)));
-  c.append(el("div", "meta", `Scritto il ${fmtLong(new Date(m.created_at))}, aperto il ${fmtLong(new Date(m.open_at))}`));
+  c.append(el("div", "meta", `Scritto il ${whenText(m.created_at)}, aperto il ${whenText(m.open_at)}`));
   if (isRead) c.append(el("div", "text", m.body || ""));
   else {
     c.append(el("div", "who", "Tocca per aprire"));
-    c.addEventListener("click", () => {
-      const seen = loadSeen(); seen.add(m.id); saveSeen(seen);
-      justOpened = m.id;
-      renderCapsule();
-    });
+    c.addEventListener("click", () => openLetter(m));
   }
   return c;
 }
@@ -1190,28 +1280,72 @@ async function removeCapsule(id) {
   loadCapsule();
 }
 
+/* ---- la lettera che si apre ---- */
+
+let letterTimers = [];
+let letterMsg = null;
+
+function openLetter(m) {
+  const dlg = $("letter-dialog");
+  letterMsg = m;
+  $("lt-from").textContent = whoIs(m);
+  $("lt-text").textContent = m.body || "";
+  $("lt-date").textContent = `Scritto il ${whenText(m.created_at)}, aperto il ${whenText(m.open_at)}`;
+  dlg.className = "";
+  dlg.showModal();
+  letterTimers.forEach(clearTimeout);
+  letterTimers = [];
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { dlg.classList.add("show", "read"); return; }
+  // la busta compare, si spezza il sigillo e si apre, la lettera esce, poi si legge
+  [["show", 60], ["open", 750], ["out", 1600], ["read", 2750]].forEach(([name, ms]) =>
+    letterTimers.push(setTimeout(() => dlg.classList.add(name), ms)));
+}
+
+$("letter-dialog").addEventListener("click", (e) => {       // un tocco salta l'animazione
+  const dlg = $("letter-dialog");
+  if (e.target.closest("#lt-close") || dlg.classList.contains("read")) return;
+  letterTimers.forEach(clearTimeout);
+  letterTimers = [];
+  dlg.classList.add("show", "open", "out", "read");
+});
+$("lt-close").addEventListener("click", () => $("letter-dialog").close());
+$("letter-dialog").addEventListener("close", () => {
+  letterTimers.forEach(clearTimeout);
+  letterTimers = [];
+  if (!letterMsg) return;
+  const seen = loadSeen(); seen.add(letterMsg.id); saveSeen(seen);   // da ora il messaggio risulta letto
+  letterMsg = null;
+  renderCapsule();
+});
+
 /* ---- inserimento di un nuovo messaggio ---- */
 
 function chipDate(kind) {
   const t = new Date();
-  if (kind === "ann") {
-    const d = new Date(t.getFullYear(), TOGETHER_SINCE.getMonth(), TOGETHER_SINCE.getDate());
-    return d <= t ? new Date(t.getFullYear() + 1, d.getMonth(), d.getDate()) : d;
+  if (kind === "h1") {
+    const d = new Date(t.getTime() + 3600e3);
+    d.setMinutes(Math.ceil(d.getMinutes() / 5) * 5, 0, 0);
+    return d;
   }
-  const first = new Date(t.getFullYear(), t.getMonth() + (kind === "m1" ? 1 : 6), 1);
+  if (kind === "ann") {
+    const d = new Date(t.getFullYear(), TOGETHER_SINCE.getMonth(), TOGETHER_SINCE.getDate(), 9);
+    return d <= t ? new Date(t.getFullYear() + 1, d.getMonth(), d.getDate(), 9) : d;
+  }
+  const first = new Date(t.getFullYear(), t.getMonth() + (kind === "m1" ? 1 : 6), 1, 9);
   first.setDate(Math.min(t.getDate(), new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate()));
   return first;
 }
 
 $("add-capsule").addEventListener("click", () => {
-  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-  $("cap-body").value = ""; $("cap-date").value = ""; $("cap-error").textContent = "";
-  $("cap-date").min = toDateInput(tomorrow);
+  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1); tomorrow.setHours(9, 0, 0, 0);
+  $("cap-body").value = ""; $("cap-error").textContent = "";
+  $("cap-date").min = toLocalInput(new Date(Date.now() + 2 * 60000));
+  $("cap-date").value = toLocalInput(tomorrow);
   $("cap-dialog").showModal();
 });
 $("cap-cancel").addEventListener("click", () => $("cap-dialog").close());
 document.querySelectorAll("[data-cap-chip]").forEach((b) =>
-  b.addEventListener("click", () => { $("cap-date").value = toDateInput(chipDate(b.dataset.capChip)); }));
+  b.addEventListener("click", () => { $("cap-date").value = toLocalInput(chipDate(b.dataset.capChip)); }));
 
 function sealAnimation() {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return Promise.resolve();
@@ -1240,9 +1374,9 @@ $("cap-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   $("cap-error").textContent = "";
   const body = $("cap-body").value.trim();
-  const openAt = new Date(`${$("cap-date").value}T09:00`);
+  const openAt = new Date($("cap-date").value);
   if (!body) { $("cap-error").textContent = "Scrivi il messaggio."; return; }
-  if (isNaN(openAt) || openAt <= new Date()) { $("cap-error").textContent = "Scegli un giorno futuro."; return; }
+  if (isNaN(openAt) || openAt.getTime() < Date.now() + 2 * 60000) { $("cap-error").textContent = "Scegli un momento almeno 2 minuti da adesso."; return; }
   const btn = $("cap-submit");
   btn.disabled = true;
   const { error } = await sb.from("capsule_messages").insert({ body, open_at: openAt.toISOString() });
@@ -1266,6 +1400,7 @@ let viewerFile = null;
 let viewerUrl = null;
 let pendingFiles = null;
 let editingAlbum = null;
+let newAlbumFiles = [];
 const urlCache = new Map();
 const dateOnly = (s) => new Date(s + "T12:00");
 const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) ||
@@ -1371,8 +1506,14 @@ async function renderPhotos() {
   $("album-count").textContent = photos.length === 1 ? "1 foto" : `${photos.length} foto`;
   const grid = $("photo-grid");
   grid.replaceChildren();
+  const add = el("button", "tile add");
+  add.type = "button";
+  add.setAttribute("aria-label", "Aggiungi foto");
+  add.append(el("span", "plus", "+"), el("span", "", "Aggiungi"));
+  add.addEventListener("click", () => $("photo-input").click());
+  grid.append(add);
   if (!photos.length) {
-    grid.append(el("p", "mem-empty", "Nessuna foto: aggiungi le prime con il pulsante qui sotto."));
+    grid.append(el("p", "mem-empty", "Nessuna foto ancora: tocca «Aggiungi foto» per caricare le prime."));
     return;
   }
   photos.forEach((p, i) => {
@@ -1403,6 +1544,10 @@ function openAlbumForm(a) {
   $("alb-place").value = a && a.place ? a.place : "";
   $("alb-date").value = a ? a.happened_on : toDateInput(new Date());
   $("alb-desc").value = a && a.description ? a.description : "";
+  newAlbumFiles = [];
+  $("alb-picked").textContent = "";
+  $("alb-pick-lbl").hidden = !!a;
+  $("alb-pickrow").hidden = !!a;
   $("alb-dialog").showModal();
 }
 $("add-album").addEventListener("click", () => openAlbumForm(null));
@@ -1430,8 +1575,11 @@ $("alb-form").addEventListener("submit", async (e) => {
     const { data, error } = await sb.from("memory_albums").insert(row).select().single();
     if (error) { console.error(error); $("alb-error").textContent = "Non sono riuscito a salvare. Riprova."; return; }
     $("alb-dialog").close();
-    toast("Raccolta creata: aggiungi le prime foto");
-    openAlbum(data);
+    const files = newAlbumFiles;
+    newAlbumFiles = [];
+    toast(files.length ? "Raccolta creata: carico le foto…" : "Raccolta creata: ora aggiungi le prime foto");
+    await openAlbum(data);
+    if (files.length) await uploadFiles(files);
   }
 });
 
@@ -1492,10 +1640,7 @@ async function uploadOne(file) {
 }
 
 $("add-photos").addEventListener("click", () => $("photo-input").click());
-$("photo-input").addEventListener("change", async (e) => {
-  const files = [...e.target.files];
-  e.target.value = "";
-  if (!files.length || !curAlbum) return;
+async function uploadFiles(files) {
   const st = $("upload-status"), bar = st.querySelector("i"), txt = st.querySelector("span");
   st.hidden = false;
   let ok = 0, fail = 0;
@@ -1509,7 +1654,55 @@ $("photo-input").addEventListener("change", async (e) => {
   toast(fail ? `${ok} foto caricate, ${fail} non riuscite` : `${ok} ${ok === 1 ? "foto caricata" : "foto caricate"}`);
   await loadPhotos();
   loadMemories();
+}
+$("photo-input").addEventListener("change", async (e) => {
+  const files = [...e.target.files];
+  e.target.value = "";
+  if (files.length && curAlbum) await uploadFiles(files);
 });
+$("album-add").addEventListener("click", () => $("photo-input").click());
+$("alb-pick").addEventListener("click", () => $("alb-files").click());
+$("alb-files").addEventListener("change", (e) => {
+  newAlbumFiles = [...e.target.files];
+  e.target.value = "";
+  const n = newAlbumFiles.length;
+  $("alb-picked").textContent = n ? `${n} ${n === 1 ? "foto scelta" : "foto scelte"}` : "";
+});
+
+/* ---- copertina della raccolta ---- */
+
+async function setCover(thumbPath) {
+  const { error } = await sb.from("memory_albums").update({ cover_path: thumbPath }).eq("id", curAlbum.id);
+  if (error) { toast("Non sono riuscito a cambiare la copertina."); return; }
+  curAlbum.cover_path = thumbPath;
+  $("cover-dialog").close();
+  toast("Copertina aggiornata");
+  loadMemories();
+}
+
+async function openCoverPicker() {
+  if (!photos.length) { toast("Aggiungi prima qualche foto alla raccolta."); return; }
+  const grid = $("cover-grid");
+  grid.replaceChildren();
+  const imgs = photos.map((p) => {
+    const t = el("button", "tile" + (p.thumb_path === curAlbum.cover_path ? " current" : ""));
+    t.type = "button";
+    t.setAttribute("aria-label", "Usa questa foto come copertina");
+    const img = el("img");
+    img.alt = "";
+    t.append(img);
+    t.addEventListener("click", () => setCover(p.thumb_path));
+    grid.append(t);
+    return img;
+  });
+  $("cover-dialog").showModal();
+  try {
+    const urls = await signedUrls(photos.map((p) => p.thumb_path));
+    imgs.forEach((img, i) => { if (urls[i]) img.src = urls[i]; });
+  } catch (e) { console.warn("Miniature:", e); }
+}
+$("album-cover").addEventListener("click", openCoverPicker);
+$("cover-cancel").addEventListener("click", () => $("cover-dialog").close());
 
 /* ---- salvare le foto nella galleria ---- */
 
@@ -1614,11 +1807,7 @@ $("v-save").addEventListener("click", () => { if (viewerFile) saveToGallery([vie
 
 $("v-cover").addEventListener("click", async () => {
   const p = photos[curIndex];
-  if (!p) return;
-  const { error } = await sb.from("memory_albums").update({ cover_path: p.thumb_path }).eq("id", curAlbum.id);
-  if (error) { toast("Non sono riuscito a cambiare la copertina."); return; }
-  curAlbum.cover_path = p.thumb_path;
-  toast("Copertina aggiornata");
+  if (p) await setCover(p.thumb_path);
 });
 
 $("v-del").addEventListener("click", async () => {
