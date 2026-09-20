@@ -111,10 +111,9 @@
   /* ---------- Schede: Chat e Agenda ---------- */
   #tabs { display: flex; gap: 4px; margin: 6px 20px 8px; padding: 4px; background: var(--velluto); border-radius: 22px; }
   #tabs button {
-    flex: 1 1 0; min-height: 40px; border: 0; border-radius: 18px; background: none; padding: 0 6px;
-    color: var(--nebbia); font-weight: 600; font-size: .93rem; line-height: 1.1; cursor: pointer;
+    flex: 1 1 auto; min-height: 40px; border: 0; border-radius: 18px; background: none; padding: 0 5px;
+    color: var(--nebbia); font-weight: 600; font-size: .83rem; line-height: 1.1; cursor: pointer;
   }
-  #tabs #tab-capsule { flex: 2.2 1 0; }
   #tabs button[aria-selected="true"] { background: var(--vino); color: var(--testo); }
   .pane { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 
@@ -265,6 +264,54 @@
   .chip { border: 1px solid var(--nebbia); background: none; color: var(--testo); border-radius: 18px; padding: 7px 12px; font-size: .86rem; cursor: pointer; }
   dialog .hint { margin: 6px 0 12px; font-size: .9rem; }
 
+  /* ---------- Diario dei ricordi ---------- */
+  .mem-view { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  #mem-scroll, #album-scroll { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 4px 16px 16px; }
+  .mem-title { margin: 8px 4px 0; font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 2rem; line-height: 1.1; }
+  .mem-sub { margin: 2px 4px 14px; min-height: 1.2em; color: var(--nebbia); font-size: .93rem; }
+  #mem-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 14px; padding: 8px 4px 16px; }
+  .polaroid {
+    display: block; text-align: left; border: 0; padding: 8px 8px 10px; border-radius: 4px; cursor: pointer;
+    background: var(--testo); color: var(--inchiostro); box-shadow: 0 10px 24px rgba(0, 0, 0, .38);
+    transform: rotate(var(--tilt, 0deg)); transition: transform .2s ease;
+  }
+  .polaroid:nth-child(odd) { --tilt: -1.3deg; }
+  .polaroid:nth-child(even) { --tilt: 1.1deg; }
+  .polaroid:nth-child(3n) { --tilt: .4deg; }
+  .polaroid:active { transform: rotate(0deg) scale(.98); }
+  .polaroid .ph { aspect-ratio: 1; background: #3A2D5E; display: grid; place-items: center; overflow: hidden; border-radius: 2px; }
+  .polaroid .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .polaroid .ph svg { width: 34%; fill: #8A76B8; }
+  .polaroid .cap { padding: 9px 2px 0; }
+  .polaroid .n { font-family: var(--serif); font-style: italic; font-weight: 700; font-size: 1.25rem; line-height: 1.1; overflow-wrap: anywhere; }
+  .polaroid .m { margin-top: 3px; color: #6B5A72; font-size: .78rem; line-height: 1.25; }
+  #album-name { margin: 10px 4px 2px; font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 2.2rem; line-height: 1.05; overflow-wrap: anywhere; }
+  #album-when { margin: 2px 4px; color: var(--testo); }
+  #album-count { margin: 0 4px 10px; color: var(--nebbia); font-size: .88rem; }
+  #album-desc { margin: 8px 4px 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .album-actions { display: flex; gap: 10px; margin: 0 0 14px; }
+  .btn-sec.ready { background: var(--luna); color: var(--inchiostro); border-color: var(--luna); }
+  .btn-sec:disabled { opacity: .6; }
+  .upload { margin: 0 4px 12px; color: var(--nebbia); font-size: .9rem; }
+  .upload .bar { height: 6px; border-radius: 3px; background: var(--velluto); overflow: hidden; margin-bottom: 6px; }
+  .upload .bar i { display: block; height: 100%; width: 0; background: var(--vino); transition: width .3s ease; }
+  #photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .tile { display: block; padding: 0; border: 0; border-radius: 6px; overflow: hidden; background: var(--velluto); aspect-ratio: 1; cursor: pointer; }
+  .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .mem-empty { grid-column: 1 / -1; text-align: center; color: var(--nebbia); font-family: var(--serif); font-style: italic; font-size: 1.3rem; margin: 26px auto; max-width: 260px; }
+
+  #viewer { width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; border-radius: 0; background: #0D0A18; }
+  #viewer[open] { display: flex; flex-direction: column; }
+  .v-top { display: flex; justify-content: space-between; align-items: center; padding: max(12px, env(safe-area-inset-top)) 16px 8px; color: var(--nebbia); }
+  .v-top button { background: none; border: 0; color: var(--testo); font-size: 1.9rem; line-height: 1; padding: 4px 10px; cursor: pointer; }
+  .v-stage { flex: 1; min-height: 0; position: relative; display: flex; align-items: center; justify-content: center; touch-action: pan-y; }
+  #v-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .v-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(13, 10, 24, .55); border: 0; color: var(--testo); font-size: 2rem; width: 44px; height: 56px; border-radius: 12px; cursor: pointer; }
+  #v-prev { left: 6px; } #v-next { right: 6px; }
+  .v-bar { padding: 10px 16px max(14px, env(safe-area-inset-bottom)); }
+  .v-more { display: flex; gap: 10px; margin-top: 10px; }
+  #v-save:disabled { opacity: .55; }
+
   #toast {
     position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 150px);
     transform: translate(-50%, 8px); opacity: 0; pointer-events: none;
@@ -327,6 +374,7 @@
     <button id="tab-chat" role="tab" type="button" aria-selected="true">Chat</button>
     <button id="tab-agenda" role="tab" type="button" aria-selected="false">Agenda</button>
     <button id="tab-capsule" role="tab" type="button" aria-selected="false">Capsula del tempo</button>
+    <button id="tab-memories" role="tab" type="button" aria-selected="false">Ricordi</button>
   </div>
 
   <div id="banner" hidden>
@@ -420,7 +468,80 @@
       <button id="add-capsule" class="primary" type="button">Aggiungi un messaggio</button>
     </footer>
   </div>
+
+  <div id="pane-memories" class="pane" hidden>
+    <div id="mem-list-view" class="mem-view">
+      <div id="mem-scroll">
+        <h3 class="mem-title">Diario dei ricordi</h3>
+        <p class="mem-sub" id="mem-sub"></p>
+        <div id="mem-grid"></div>
+      </div>
+      <footer>
+        <button id="add-album" class="primary" type="button">Nuova raccolta</button>
+      </footer>
+    </div>
+
+    <div id="mem-album-view" class="mem-view" hidden>
+      <div id="album-scroll">
+        <button id="album-back" class="ghost" type="button">← Tutti i ricordi</button>
+        <h3 id="album-name"></h3>
+        <p id="album-when"></p>
+        <p id="album-count"></p>
+        <p id="album-desc" hidden></p>
+        <div class="album-actions">
+          <button class="btn-sec" type="button" id="album-edit">Modifica</button>
+          <button class="btn-sec" type="button" id="album-download">Scarica tutte</button>
+        </div>
+        <div class="upload" id="upload-status" hidden><div class="bar"><i></i></div><span></span></div>
+        <div id="photo-grid"></div>
+      </div>
+      <footer>
+        <button id="add-photos" class="primary" type="button">Aggiungi foto</button>
+        <input type="file" id="photo-input" accept="image/*" multiple hidden>
+      </footer>
+    </div>
+  </div>
 </div>
+
+<dialog id="alb-dialog">
+  <form id="alb-form">
+    <h3 id="alb-heading">Nuova raccolta</h3>
+    <label>Nome
+      <input id="alb-name" maxlength="80" required>
+    </label>
+    <label>Luogo
+      <input id="alb-place" maxlength="120">
+    </label>
+    <label>Data
+      <input type="date" id="alb-date" required>
+    </label>
+    <label>Descrizione (facoltativa)
+      <textarea id="alb-desc" maxlength="2000" rows="4"></textarea>
+    </label>
+    <p class="error" id="alb-error" role="alert"></p>
+    <button class="primary" type="submit">Salva</button>
+    <div class="actions">
+      <button class="btn-sec" type="button" id="alb-cancel">Annulla</button>
+      <button class="btn-sec danger" type="button" id="alb-delete" hidden>Elimina raccolta</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="viewer">
+  <div class="v-top"><span id="v-count"></span><button type="button" id="v-close" aria-label="Chiudi">×</button></div>
+  <div class="v-stage">
+    <img id="v-img" alt="">
+    <button type="button" class="v-nav" id="v-prev" aria-label="Foto precedente">‹</button>
+    <button type="button" class="v-nav" id="v-next" aria-label="Foto successiva">›</button>
+  </div>
+  <div class="v-bar">
+    <button class="primary" type="button" id="v-save" disabled>Salva nella galleria</button>
+    <div class="v-more">
+      <button class="btn-sec" type="button" id="v-cover">Come copertina</button>
+      <button class="btn-sec danger" type="button" id="v-del">Elimina</button>
+    </div>
+  </div>
+</dialog>
 
 <dialog id="cap-dialog">
   <form id="cap-form">
@@ -787,12 +908,13 @@ document.addEventListener("visibilitychange", () => {
     renderCounter(); syncMessages();
     if (!$("pane-agenda").hidden) loadEvents();
     if (!$("pane-capsule").hidden) loadCapsule();
+    if (!$("pane-memories").hidden) loadMemories();
   }
 });
 
 /* ---------- Schede ---------- */
 
-const TABS = ["chat", "agenda", "capsule"];
+const TABS = ["chat", "agenda", "capsule", "memories"];
 function setTab(name) {
   if (!TABS.includes(name)) name = "chat";
   for (const t of TABS) {
@@ -801,6 +923,7 @@ function setTab(name) {
   }
   if (name === "agenda") loadEvents();
   else if (name === "capsule") loadCapsule();
+  else if (name === "memories") loadMemories();
   else { const l = $("messages"); l.scrollTop = l.scrollHeight; }
 }
 for (const t of TABS) $("tab-" + t).addEventListener("click", () => setTab(t));
@@ -1129,6 +1252,391 @@ $("cap-form").addEventListener("submit", async (e) => {
   await sealAnimation();
   toast("Messaggio sigillato nella capsula");
   loadCapsule();
+});
+
+/* ---------- Diario dei ricordi ---------- */
+
+const BUCKET = "memories";
+let albums = [];
+let photos = [];
+let curAlbum = null;
+let curIndex = 0;
+let viewToken = 0;
+let viewerFile = null;
+let viewerUrl = null;
+let pendingFiles = null;
+let editingAlbum = null;
+const urlCache = new Map();
+const dateOnly = (s) => new Date(s + "T12:00");
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+async function signedUrls(paths) {
+  const now = Date.now();
+  const need = paths.filter((p) => !urlCache.has(p) || urlCache.get(p).exp < now + 60000);
+  if (need.length) {
+    const { data, error } = await sb.storage.from(BUCKET).createSignedUrls(need, 3600);
+    if (error) throw error;
+    for (const d of data) if (d.signedUrl) urlCache.set(d.path, { url: d.signedUrl, exp: now + 3600e3 });
+  }
+  return paths.map((p) => (urlCache.get(p) ? urlCache.get(p).url : null));
+}
+
+async function loadMemories() {
+  const { data, error } = await sb.from("memory_albums").select("*, memory_photos(count)").order("happened_on", { ascending: false });
+  if (error) { toast("Non riesco a caricare i ricordi."); return; }
+  albums = data;
+  if (curAlbum) {
+    const fresh = albums.find((a) => a.id === curAlbum.id);
+    if (fresh) curAlbum = fresh;
+  }
+  renderAlbums();
+  if (curAlbum && !$("mem-album-view").hidden) loadPhotos();
+}
+
+async function renderAlbums() {
+  const grid = $("mem-grid");
+  grid.replaceChildren();
+  const count = (a) => (a.memory_photos && a.memory_photos[0] ? a.memory_photos[0].count : 0);
+  const total = albums.reduce((n, a) => n + count(a), 0);
+  $("mem-sub").textContent = albums.length
+    ? `${albums.length} ${albums.length === 1 ? "raccolta" : "raccolte"}, ${total} foto` : "";
+  if (!albums.length) {
+    grid.append(el("p", "mem-empty", "Ancora nessun ricordo. Crea la prima raccolta."));
+    return;
+  }
+  const covers = [];
+  for (const a of albums) {
+    const b = el("button", "polaroid");
+    b.type = "button";
+    const ph = el("div", "ph");
+    if (!a.cover_path) ph.innerHTML = MOON_SVG;
+    b.append(ph);
+    const cap = el("div", "cap");
+    cap.append(el("div", "n", a.name));
+    cap.append(el("div", "m", [a.place, fmtLong(dateOnly(a.happened_on))].filter(Boolean).join(", ")));
+    cap.append(el("div", "m", `${count(a)} foto`));
+    b.append(cap);
+    b.addEventListener("click", () => openAlbum(a));
+    grid.append(b);
+    if (a.cover_path) covers.push({ a, ph });
+  }
+  try {
+    const urls = await signedUrls(covers.map((c) => c.a.cover_path));
+    covers.forEach((c, i) => {
+      if (!urls[i]) return;
+      const img = el("img");
+      img.alt = ""; img.loading = "lazy"; img.src = urls[i];
+      c.ph.replaceChildren(img);
+    });
+  } catch (e) { console.warn("Copertine:", e); }
+}
+
+function showList() {
+  curAlbum = null;
+  $("mem-album-view").hidden = true;
+  $("mem-list-view").hidden = false;
+  loadMemories();
+}
+$("album-back").addEventListener("click", showList);
+
+function resetDownloadButton() {
+  pendingFiles = null;
+  const b = $("album-download");
+  b.textContent = "Scarica tutte"; b.disabled = false; b.classList.remove("ready");
+}
+
+async function openAlbum(a) {
+  curAlbum = a;
+  $("mem-list-view").hidden = true;
+  $("mem-album-view").hidden = false;
+  $("album-name").textContent = a.name;
+  $("album-when").textContent = [a.place, fmtLong(dateOnly(a.happened_on))].filter(Boolean).join(", ");
+  $("album-desc").textContent = a.description || "";
+  $("album-desc").hidden = !a.description;
+  resetDownloadButton();
+  $("album-scroll").scrollTop = 0;
+  await loadPhotos();
+}
+
+async function loadPhotos() {
+  if (!curAlbum) return;
+  const { data, error } = await sb.from("memory_photos").select("*").eq("album_id", curAlbum.id).order("created_at");
+  if (error) { toast("Non riesco a caricare le foto."); return; }
+  photos = data;
+  renderPhotos();
+}
+
+async function renderPhotos() {
+  $("album-count").textContent = photos.length === 1 ? "1 foto" : `${photos.length} foto`;
+  const grid = $("photo-grid");
+  grid.replaceChildren();
+  if (!photos.length) {
+    grid.append(el("p", "mem-empty", "Nessuna foto: aggiungi le prime con il pulsante qui sotto."));
+    return;
+  }
+  photos.forEach((p, i) => {
+    const t = el("button", "tile");
+    t.type = "button";
+    t.setAttribute("aria-label", `Foto ${i + 1}`);
+    const img = el("img");
+    img.alt = ""; img.loading = "lazy";
+    t.append(img);
+    t.addEventListener("click", () => openViewer(i));
+    grid.append(t);
+    p.img = img;
+  });
+  try {
+    const urls = await signedUrls(photos.map((p) => p.thumb_path));
+    photos.forEach((p, i) => { if (urls[i] && p.img) p.img.src = urls[i]; });
+  } catch (e) { console.warn("Miniature:", e); }
+}
+
+/* ---- raccolte: crea, modifica, elimina ---- */
+
+function openAlbumForm(a) {
+  editingAlbum = a;
+  $("alb-heading").textContent = a ? "Modifica raccolta" : "Nuova raccolta";
+  $("alb-error").textContent = "";
+  $("alb-delete").hidden = !a;
+  $("alb-name").value = a ? a.name : "";
+  $("alb-place").value = a && a.place ? a.place : "";
+  $("alb-date").value = a ? a.happened_on : toDateInput(new Date());
+  $("alb-desc").value = a && a.description ? a.description : "";
+  $("alb-dialog").showModal();
+}
+$("add-album").addEventListener("click", () => openAlbumForm(null));
+$("album-edit").addEventListener("click", () => openAlbumForm(curAlbum));
+$("alb-cancel").addEventListener("click", () => $("alb-dialog").close());
+
+$("alb-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("alb-error").textContent = "";
+  const row = {
+    name: $("alb-name").value.trim(),
+    place: $("alb-place").value.trim() || null,
+    description: $("alb-desc").value.trim() || null,
+    happened_on: $("alb-date").value,
+  };
+  if (!row.name || !row.happened_on) { $("alb-error").textContent = "Servono almeno un nome e una data."; return; }
+  if (editingAlbum) {
+    const { error } = await sb.from("memory_albums").update(row).eq("id", editingAlbum.id);
+    if (error) { console.error(error); $("alb-error").textContent = "Non sono riuscito a salvare. Riprova."; return; }
+    $("alb-dialog").close();
+    Object.assign(curAlbum, row);
+    openAlbum(curAlbum);
+    toast("Raccolta aggiornata");
+  } else {
+    const { data, error } = await sb.from("memory_albums").insert(row).select().single();
+    if (error) { console.error(error); $("alb-error").textContent = "Non sono riuscito a salvare. Riprova."; return; }
+    $("alb-dialog").close();
+    toast("Raccolta creata: aggiungi le prime foto");
+    openAlbum(data);
+  }
+});
+
+$("alb-delete").addEventListener("click", async () => {
+  if (!editingAlbum || !confirm("Eliminare la raccolta e tutte le sue foto? Non si potrà recuperare.")) return;
+  const { data: ph } = await sb.from("memory_photos").select("path,thumb_path").eq("album_id", editingAlbum.id);
+  const paths = (ph || []).flatMap((p) => [p.path, p.thumb_path]);
+  if (paths.length) await sb.storage.from(BUCKET).remove(paths);
+  const { error } = await sb.from("memory_albums").delete().eq("id", editingAlbum.id);
+  if (error) { $("alb-error").textContent = "Non sono riuscito a eliminarla. Riprova."; return; }
+  $("alb-dialog").close();
+  toast("Raccolta eliminata");
+  showList();
+});
+
+/* ---- caricamento delle foto (ridimensionate prima dell'invio) ---- */
+
+function decodeImage(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("immagine non leggibile")); };
+    img.src = url;
+  });
+}
+
+async function shrink(img, maxSide, quality) {
+  const s = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+  const w = Math.max(1, Math.round(img.naturalWidth * s)), h = Math.max(1, Math.round(img.naturalHeight * s));
+  const c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  c.getContext("2d").drawImage(img, 0, 0, w, h);
+  const blob = await new Promise((r) => c.toBlob(r, "image/jpeg", quality));
+  if (!blob) throw new Error("conversione non riuscita");
+  return { blob, w, h };
+}
+
+async function uploadOne(file) {
+  const img = await decodeImage(file);
+  const full = await shrink(img, 1920, 0.85);
+  const thumb = await shrink(img, 480, 0.78);
+  URL.revokeObjectURL(img.src);
+  const base = `${curAlbum.id}/${crypto.randomUUID()}`;
+  const store = sb.storage.from(BUCKET);
+  const a = await store.upload(`${base}.jpg`, full.blob, { contentType: "image/jpeg" });
+  if (a.error) throw a.error;
+  const b = await store.upload(`${base}_t.jpg`, thumb.blob, { contentType: "image/jpeg" });
+  if (b.error) { await store.remove([`${base}.jpg`]); throw b.error; }
+  const { error } = await sb.from("memory_photos").insert({
+    album_id: curAlbum.id, path: `${base}.jpg`, thumb_path: `${base}_t.jpg`, width: full.w, height: full.h,
+  });
+  if (error) { await store.remove([`${base}.jpg`, `${base}_t.jpg`]); throw error; }
+  if (!curAlbum.cover_path) {
+    curAlbum.cover_path = `${base}_t.jpg`;
+    await sb.from("memory_albums").update({ cover_path: curAlbum.cover_path }).eq("id", curAlbum.id);
+  }
+}
+
+$("add-photos").addEventListener("click", () => $("photo-input").click());
+$("photo-input").addEventListener("change", async (e) => {
+  const files = [...e.target.files];
+  e.target.value = "";
+  if (!files.length || !curAlbum) return;
+  const st = $("upload-status"), bar = st.querySelector("i"), txt = st.querySelector("span");
+  st.hidden = false;
+  let ok = 0, fail = 0;
+  for (let i = 0; i < files.length; i++) {
+    txt.textContent = `Carico la foto ${i + 1} di ${files.length}…`;
+    bar.style.width = `${(i / files.length) * 100}%`;
+    try { await uploadOne(files[i]); ok++; } catch (err) { console.error(err); fail++; }
+  }
+  bar.style.width = "100%";
+  setTimeout(() => { st.hidden = true; bar.style.width = "0"; }, 700);
+  toast(fail ? `${ok} foto caricate, ${fail} non riuscite` : `${ok} ${ok === 1 ? "foto caricata" : "foto caricate"}`);
+  await loadPhotos();
+  loadMemories();
+});
+
+/* ---- salvare le foto nella galleria ---- */
+
+const slug = (s) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "ricordo";
+const fileName = (i) => `${slug(curAlbum.name)}-${i + 1}.jpg`;
+
+async function saveToGallery(files) {
+  // iPhone: il foglio di condivisione ha «Salva immagine», che la mette in Foto
+  if (isIOS() && navigator.canShare && navigator.canShare({ files })) {
+    try { await navigator.share({ files }); return; }
+    catch (e) { if (e.name === "AbortError") return; console.warn("Condivisione:", e); }
+  }
+  // Android e computer: scarico i file, che compaiono nella Galleria (cartella Download)
+  for (const f of files) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(f);
+    a.download = f.name;
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+    if (files.length > 1) await new Promise((r) => setTimeout(r, 500));
+  }
+  toast(files.length === 1 ? "Foto scaricata: la trovi nella Galleria" : `${files.length} foto scaricate`);
+}
+
+$("album-download").addEventListener("click", async () => {
+  const btn = $("album-download");
+  if (pendingFiles) {                                  // iPhone: secondo tocco = si apre il foglio «Salva»
+    const files = pendingFiles;
+    resetDownloadButton();
+    await saveToGallery(files);
+    return;
+  }
+  if (!photos.length) { toast("Non ci sono foto da scaricare."); return; }
+  btn.disabled = true;
+  let files = [];
+  for (let i = 0; i < photos.length; i++) {
+    btn.textContent = `Preparo ${i + 1} di ${photos.length}…`;
+    const { data, error } = await sb.storage.from(BUCKET).download(photos[i].path);
+    if (!error && data) files.push(new File([data], fileName(i), { type: "image/jpeg" }));
+  }
+  btn.disabled = false;
+  if (!files.length) { resetDownloadButton(); toast("Non sono riuscito a scaricare le foto."); return; }
+  if (isIOS() && navigator.canShare && navigator.canShare({ files })) {
+    if (files.length > 60) { files = files.slice(0, 60); toast("Salvo le prime 60 foto: poi ripeti per le altre."); }
+    pendingFiles = files;
+    btn.textContent = `Salva ${files.length} foto nella galleria`;
+    btn.classList.add("ready");
+  } else {
+    resetDownloadButton();
+    await saveToGallery(files);
+  }
+});
+
+/* ---- visualizzatore a schermo intero ---- */
+
+async function showPhoto() {
+  const p = photos[curIndex];
+  if (!p) return;
+  const token = ++viewToken;
+  $("v-count").textContent = `${curIndex + 1} di ${photos.length}`;
+  $("v-save").disabled = true;
+  viewerFile = null;
+  try {                                                 // subito la miniatura, poi la foto intera
+    const [t] = await signedUrls([p.thumb_path]);
+    if (t && token === viewToken) $("v-img").src = t;
+  } catch (_) { /* non è un problema */ }
+  const { data: blob, error } = await sb.storage.from(BUCKET).download(p.path);
+  if (token !== viewToken) return;                      // nel frattempo hai cambiato foto
+  if (error || !blob) { toast("Non riesco a caricare la foto."); return; }
+  viewerFile = new File([blob], fileName(curIndex), { type: "image/jpeg" });
+  if (viewerUrl) URL.revokeObjectURL(viewerUrl);
+  viewerUrl = URL.createObjectURL(blob);
+  $("v-img").src = viewerUrl;
+  $("v-save").disabled = false;
+}
+
+function openViewer(i) {
+  curIndex = i;
+  $("v-img").removeAttribute("src");
+  $("viewer").showModal();
+  showPhoto();
+}
+function step(d) {
+  if (photos.length < 2) return;
+  curIndex = (curIndex + d + photos.length) % photos.length;
+  showPhoto();
+}
+$("v-prev").addEventListener("click", () => step(-1));
+$("v-next").addEventListener("click", () => step(1));
+$("v-close").addEventListener("click", () => $("viewer").close());
+$("viewer").addEventListener("keydown", (e) => { if (e.key === "ArrowLeft") step(-1); if (e.key === "ArrowRight") step(1); });
+let touchX = null;
+$("viewer").addEventListener("touchstart", (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+$("viewer").addEventListener("touchend", (e) => {
+  if (touchX === null) return;
+  const dx = e.changedTouches[0].clientX - touchX;
+  touchX = null;
+  if (Math.abs(dx) > 60) step(dx < 0 ? 1 : -1);
+});
+
+$("v-save").addEventListener("click", () => { if (viewerFile) saveToGallery([viewerFile]); });
+
+$("v-cover").addEventListener("click", async () => {
+  const p = photos[curIndex];
+  if (!p) return;
+  const { error } = await sb.from("memory_albums").update({ cover_path: p.thumb_path }).eq("id", curAlbum.id);
+  if (error) { toast("Non sono riuscito a cambiare la copertina."); return; }
+  curAlbum.cover_path = p.thumb_path;
+  toast("Copertina aggiornata");
+});
+
+$("v-del").addEventListener("click", async () => {
+  const p = photos[curIndex];
+  if (!p || !confirm("Eliminare questa foto? Non si potrà recuperare.")) return;
+  await sb.storage.from(BUCKET).remove([p.path, p.thumb_path]);
+  const { error } = await sb.from("memory_photos").delete().eq("id", p.id);
+  if (error) { toast("Non sono riuscito a eliminarla."); return; }
+  photos.splice(curIndex, 1);
+  if (curAlbum.cover_path === p.thumb_path) {
+    curAlbum.cover_path = photos.length ? photos[0].thumb_path : null;
+    await sb.from("memory_albums").update({ cover_path: curAlbum.cover_path }).eq("id", curAlbum.id);
+  }
+  toast("Foto eliminata");
+  renderPhotos();
+  if (!photos.length) $("viewer").close();
+  else { curIndex = Math.min(curIndex, photos.length - 1); showPhoto(); }
+  loadMemories();
 });
 
 /* ---------- Notifiche ---------- */
